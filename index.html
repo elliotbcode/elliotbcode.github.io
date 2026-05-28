@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tablet I</title>
+    <style>
+        html,
+        body {
+            cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64"><path d="M 4 60 C 10 55, 20 45, 30 35 C 40 25, 50 15, 60 4 C 55 10, 45 20, 35 30 C 25 40, 15 50, 4 60 Z" fill="%235c4033" stroke="%232b1d14" stroke-width="1.5" stroke-linejoin="round"/><path d="M 30 35 C 35 30, 40 20, 45 15 L 43 14 C 38 20, 32 25, 28 30 Z" fill="%2340281a"/><path d="M 15 50 C 18 40, 20 30, 22 25 L 20 24 C 18 30, 15 40, 12 48 Z" fill="%2340281a"/></svg>') 4 60, crosshair;
+            height: 100%;
+            margin: 0;
+            overflow: hidden;
+            user-select: none;
+            -webkit-text-size-adjust: 100%;
+            text-size-adjust: 100%;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f5f5f5;
+        }
+
+        #viewport {
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-image: url("images/new computer.jpeg");
+            background-size: cover;
+            background-position: center center;
+            background-repeat: no-repeat;
+        }
+
+        /* Fixed design canvas: background + screen scale together */
+        #scene {
+            position: relative;
+            width: 1920px;
+            height: 1080px;
+            flex-shrink: 0;
+            background-image: url("images/new computer.jpeg");
+            background-size: cover;
+            background-position: center center;
+            background-repeat: no-repeat;
+            /* Removed scaling transform to prevent resizing */
+        }
+
+        .container {
+            display: none;
+        }
+
+        h1 {
+            color: #333;
+        }
+
+        p {
+            color: #666;
+            line-height: 1.6;
+        }
+
+        .weathered-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-55%, -50%) rotate(-15deg);
+            font-size: 110px;
+            font-family: 'Papyrus', cursive;
+            font-weight: bold;
+            color: rgba(40, 35, 30, 0.7);
+            text-shadow:
+                -1px -1px 3px rgba(0, 0, 0, 0.9),
+                1px 1px 3px rgba(255, 180, 120, 0.4),
+                -4px -4px 8px rgba(0, 0, 0, 0.7),
+                4px 4px 8px rgba(255, 160, 100, 0.2),
+                -8px -8px 12px rgba(0, 0, 0, 0.5);
+            letter-spacing: 8px;
+            pointer-events: none;
+            z-index: 10;
+            mix-blend-mode: hard-light;
+            filter: url(#weathered);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 700px;
+        }
+
+        .weathered-text svg,
+        .weathered-text span {
+            flex-shrink: 0;
+        }
+
+        .char {
+            display: inline-block;
+        }
+
+        #carve-canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 50;
+            cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64"><defs><linearGradient id="wood" x1="0%25" y1="0%25" x2="100%25" y2="100%25"><stop offset="0%25" stop-color="%232c1c14"/><stop offset="30%25" stop-color="%234a3022"/><stop offset="50%25" stop-color="%232c1c14"/><stop offset="70%25" stop-color="%235a3b2a"/><stop offset="100%25" stop-color="%232c1c14"/></linearGradient></defs><path d="M8 56 L56 8 L50 2 L2 50 Z" fill="url(%23wood)" stroke="%23140a05" stroke-width="2"/></svg>') 2 50, crosshair;
+            mix-blend-mode: hard-light;
+            filter: drop-shadow(-1px -1px 3px rgba(0, 0, 0, 0.9)) drop-shadow(1px 1px 3px rgba(255, 180, 120, 0.4)) drop-shadow(-4px -4px 8px rgba(0, 0, 0, 0.7)) drop-shadow(4px 4px 8px rgba(255, 160, 100, 0.2)) drop-shadow(-8px -8px 12px rgba(0, 0, 0, 0.5)) url(#weathered);
+        }
+
+        .nav-btn {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            padding: 15px 30px;
+            background-color: rgba(20, 20, 20, 0.7);
+            color: rgba(255, 180, 120, 0.8);
+            text-decoration: none;
+            font-family: 'Papyrus', cursive;
+            font-weight: bold;
+            font-size: 28px;
+            border: 2px solid rgba(0, 0, 0, 0.8);
+            border-top-color: rgba(255, 180, 120, 0.4);
+            border-left-color: rgba(255, 180, 120, 0.4);
+            border-radius: 12px;
+            transition: all 0.3s ease;
+            box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.8);
+            z-index: 100;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.9);
+            display: none;
+        }
+
+        .nav-btn.active {
+            display: block;
+            animation: pulseGlow 1.5s infinite;
+        }
+
+        @keyframes pulseGlow {
+            0% { box-shadow: 0 0 10px rgba(255, 180, 120, 0.6), 4px 4px 10px rgba(0,0,0,0.8); border-color: rgba(255, 180, 120, 0.6); }
+            50% { box-shadow: 0 0 30px rgba(255, 200, 150, 1), 4px 4px 15px rgba(0,0,0,0.9); border-color: rgba(255, 200, 150, 1); }
+            100% { box-shadow: 0 0 10px rgba(255, 180, 120, 0.6), 4px 4px 10px rgba(0,0,0,0.8); border-color: rgba(255, 180, 120, 0.6); }
+        }
+
+        .nav-btn:hover {
+            background-color: rgba(40, 30, 20, 0.9);
+            color: rgba(255, 220, 180, 1);
+            transform: scale(1.05);
+            box-shadow: 0 0 40px rgba(255, 200, 150, 1);
+        }
+
+        #whisper-text {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: rgba(255, 255, 255, 0.8);
+            font-family: 'Papyrus', cursive;
+            font-size: 34px;
+            text-align: center;
+            z-index: 90;
+            pointer-events: none;
+            text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.9), -1px -1px 2px rgba(0, 0, 0, 0.8);
+            transition: opacity 1.5s ease-in-out;
+            opacity: 1;
+            width: 80%;
+        }
+    </style>
+</head>
+
+<body>
+    <svg style="width:0;height:0;position:absolute;" aria-hidden="true">
+        <filter id="weathered">
+            <feTurbulence type="fractalNoise" baseFrequency="0.06" numOctaves="4" result="noise" />
+            <feDisplacementMap in="SourceGraphic" in2="noise" scale="8" xChannelSelector="R" yChannelSelector="G" />
+        </filter>
+    </svg>
+    <div id="viewport">
+        <div id="scene">
+            <canvas id="carve-canvas"></canvas>
+            <div class="weathered-text">
+                <!-- Sheep 1 -->
+                <svg viewBox="0 0 100 80" width="120" height="103" style="display: inline-block; margin: 0 10px; filter: drop-shadow(-1px -1px 3px rgba(0, 0, 0, 0.9)) drop-shadow(1px 1px 3px rgba(255, 180, 120, 0.4)) drop-shadow(-4px -4px 8px rgba(0, 0, 0, 0.7));">
+                    <path d="M 35,55 C 25,55 20,48 20,40 C 12,38 10,28 18,22 C 20,14 32,10 40,15 C 48,8 62,8 70,16 C 78,12 88,18 88,28 C 95,32 95,42 88,48 C 88,56 78,60 70,55 C 62,60 48,60 40,55 Z M 18,25 C 10,25 8,38 15,44 C 20,46 25,42 24,35 C 28,32 26,26 18,25 Z" fill="rgba(25, 20, 15, 0.95)" />
+                    <rect x="28" y="52" width="6" height="18" rx="3" fill="rgba(25, 20, 15, 0.95)" />
+                    <rect x="40" y="54" width="6" height="16" rx="3" fill="rgba(25, 20, 15, 0.95)" />
+                    <rect x="64" y="54" width="6" height="16" rx="3" fill="rgba(25, 20, 15, 0.95)" />
+                    <rect x="76" y="52" width="6" height="18" rx="3" fill="rgba(25, 20, 15, 0.95)" />
+                </svg>
+                <!-- Plus Sign SVG -->
+                <svg viewBox="0 0 100 80" width="120" height="103" style="display: inline-block; margin: 0 10px; filter: drop-shadow(-1px -1px 3px rgba(0, 0, 0, 0.9)) drop-shadow(1px 1px 3px rgba(255, 180, 120, 0.4)) drop-shadow(-4px -4px 8px rgba(0, 0, 0, 0.7));">
+                    <path d="M 30,40 H 70 M 50,20 V 60" stroke="rgba(25, 20, 15, 0.95)" stroke-width="12" stroke-linecap="round" />
+                </svg>
+                <!-- Sheep 2 -->
+                <svg viewBox="0 0 100 80" width="120" height="103" style="display: inline-block; margin: 0 10px; filter: drop-shadow(-1px -1px 3px rgba(0, 0, 0, 0.9)) drop-shadow(1px 1px 3px rgba(255, 180, 120, 0.4)) drop-shadow(-4px -4px 8px rgba(0, 0, 0, 0.7));">
+                    <path d="M 35,55 C 25,55 20,48 20,40 C 12,38 10,28 18,22 C 20,14 32,10 40,15 C 48,8 62,8 70,16 C 78,12 88,18 88,28 C 95,32 95,42 88,48 C 88,56 78,60 70,55 C 62,60 48,60 40,55 Z M 18,25 C 10,25 8,38 15,44 C 20,46 25,42 24,35 C 28,32 26,26 18,25 Z" fill="rgba(25, 20, 15, 0.95)" />
+                    <rect x="28" y="52" width="6" height="18" rx="3" fill="rgba(25, 20, 15, 0.95)" />
+                    <rect x="40" y="54" width="6" height="16" rx="3" fill="rgba(25, 20, 15, 0.95)" />
+                    <rect x="64" y="54" width="6" height="16" rx="3" fill="rgba(25, 20, 15, 0.95)" />
+                    <rect x="76" y="52" width="6" height="18" rx="3" fill="rgba(25, 20, 15, 0.95)" />
+                </svg>
+                <!-- Sheep 3 -->
+                <svg viewBox="0 0 100 80" width="120" height="103" style="display: inline-block; margin: 0 10px; filter: drop-shadow(-1px -1px 3px rgba(0, 0, 0, 0.9)) drop-shadow(1px 1px 3px rgba(255, 180, 120, 0.4)) drop-shadow(-4px -4px 8px rgba(0, 0, 0, 0.7));">
+                    <path d="M 35,55 C 25,55 20,48 20,40 C 12,38 10,28 18,22 C 20,14 32,10 40,15 C 48,8 62,8 70,16 C 78,12 88,18 88,28 C 95,32 95,42 88,48 C 88,56 78,60 70,55 C 62,60 48,60 40,55 Z M 18,25 C 10,25 8,38 15,44 C 20,46 25,42 24,35 C 28,32 26,26 18,25 Z" fill="rgba(25, 20, 15, 0.95)" />
+                    <rect x="28" y="52" width="6" height="18" rx="3" fill="rgba(25, 20, 15, 0.95)" />
+                    <rect x="40" y="54" width="6" height="16" rx="3" fill="rgba(25, 20, 15, 0.95)" />
+                    <rect x="64" y="54" width="6" height="16" rx="3" fill="rgba(25, 20, 15, 0.95)" />
+                    <rect x="76" y="52" width="6" height="18" rx="3" fill="rgba(25, 20, 15, 0.95)" />
+                </svg>
+                <!-- Equals Sign SVG -->
+                <svg viewBox="0 0 100 80" width="90" height="77" style="display: inline-block; margin: 0 10px; filter: drop-shadow(-1px -1px 3px rgba(0, 0, 0, 0.9)) drop-shadow(1px 1px 3px rgba(255, 180, 120, 0.4)) drop-shadow(-4px -4px 8px rgba(0, 0, 0, 0.7));">
+                    <path d="M 30,32 H 70 M 30,48 H 70" stroke="rgba(25, 20, 15, 0.95)" stroke-width="12" stroke-linecap="round" />
+                </svg>
+            </div>
+        </div>
+    </div>
+    <div class="container">
+        <h1>Tablet I</h1>
+        <p>This is index.html.</p>
+    </div>
+    <a href="page2.html" class="nav-btn">Next ➔</a>
+
+    <script>
+
+
+        const canvas = document.getElementById('carve-canvas');
+        const ctx = canvas.getContext('2d');
+        canvas.width = 1672;
+        canvas.height = 941;
+
+        function resize() {
+            const scene = document.getElementById('scene');
+            const scale = Math.max(window.innerWidth / 1672, window.innerHeight / 941);
+            scene.style.transform = `scale(${scale})`;
+            scene.style.transformOrigin = 'center center';
+        }
+        window.addEventListener('resize', resize);
+        resize();
+
+        let isDrawing = false;
+        let points = [];
+        let allStrokes = [];
+
+        function getCanvasCoords(e) {
+            const rect = canvas.getBoundingClientRect();
+            return {
+                x: (e.clientX - rect.left) * (canvas.width / rect.width),
+                y: (e.clientY - rect.top) * (canvas.height / rect.height)
+            };
+        }
+
+        canvas.addEventListener('mousedown', (e) => {
+            isDrawing = true;
+            const coords = getCanvasCoords(e);
+            points = [coords];
+            ctx.beginPath();
+            ctx.moveTo(coords.x, coords.y);
+
+            // Carved look
+            ctx.shadowColor = 'transparent';
+            ctx.shadowBlur = 0;
+            ctx.shadowOffsetX = 0;
+            ctx.shadowOffsetY = 0;
+            ctx.strokeStyle = 'rgba(40, 35, 30, 0.7)';
+            ctx.lineWidth = 20;
+            ctx.lineCap = 'round';
+            ctx.lineJoin = 'round';
+        });
+
+        canvas.addEventListener('mousemove', (e) => {
+            if (!isDrawing) return;
+            const coords = getCanvasCoords(e);
+            ctx.lineTo(coords.x, coords.y);
+            ctx.stroke();
+            points.push(coords);
+        });
+
+        canvas.addEventListener('mouseup', () => {
+            if (!isDrawing) return;
+            isDrawing = false;
+            if (points.length > 5) {
+                allStrokes.push(points);
+            }
+            checkIfCorrect(points, allStrokes);
+        });
+
+        function checkIfCorrect(path, strokes) {
+            if (path.length < 5) return;
+
+            let isThree = false;
+            let isRomanIII = false;
+
+            // 1. Check for Arabic '3' (RLRL pattern in single stroke)
+            let xDirs = [];
+            let smoothing = 5;
+            for (let i = smoothing; i < path.length; i += smoothing) {
+                let dx = path[i].x - path[i - smoothing].x;
+                if (Math.abs(dx) > 5) {
+                    let dir = dx > 0 ? 'R' : 'L';
+                    if (xDirs.length === 0 || xDirs[xDirs.length - 1] !== dir) {
+                        xDirs.push(dir);
+                    }
+                }
+            }
+            let pattern = xDirs.join('');
+            // Relaxed check: allows some wiggles but not an infinite "121121" chain
+            if (pattern.includes('RLRL') && pattern.length <= 12) {
+                let minY = Math.min(...path.map(p => p.y));
+                let maxY = Math.max(...path.map(p => p.y));
+                let minX = Math.min(...path.map(p => p.x));
+                let maxX = Math.max(...path.map(p => p.x));
+                if (maxY - minY > 50 && maxX - minX > 30) {
+                    isThree = true;
+                }
+            }
+
+            // 2. Check for Roman 'III' (last 3 strokes are vertical lines)
+            if (strokes.length >= 3) {
+                let last3 = strokes.slice(-3);
+                let verticalCount = 0;
+                for (let s of last3) {
+                    if (s.length < 5) continue;
+                    let minY = Math.min(...s.map(p => p.y));
+                    let maxY = Math.max(...s.map(p => p.y));
+                    let minX = Math.min(...s.map(p => p.x));
+                    let maxX = Math.max(...s.map(p => p.x));
+                    // Relaxed vertical line check (< 0.8 width-to-height ratio)
+                    if (maxY - minY > 40 && (maxX - minX) / (maxY - minY) < 0.8) {
+                        verticalCount++;
+                    }
+                }
+                if (verticalCount === 3) {
+                    isRomanIII = true;
+                }
+            }
+
+            if (isThree || isRomanIII) {
+                // Turn carving green to show success!
+                ctx.shadowColor = 'rgba(100, 255, 100, 0.8)';
+                ctx.strokeStyle = 'rgba(20, 100, 20, 0.9)';
+                ctx.stroke();
+
+                // Enable the Next button and make it glow!
+                const navBtn = document.querySelector('.nav-btn');
+                navBtn.classList.add('active');
+
+                // Update whisper text
+                const wEl = document.getElementById('whisper-text');
+                if (wEl) {
+                    wEl.style.opacity = 0;
+                    setTimeout(() => {
+                        wEl.innerText = "The stone recognizes your mark. The path is open.";
+                        wEl.style.opacity = 1;
+                    }, 500);
+                }
+            }
+        }
+
+        // Developer bypass
+        let devBypass = "";
+        window.addEventListener('keydown', (e) => {
+            devBypass += e.key;
+            if (devBypass.endsWith('OPENSEASAME')) {
+                document.querySelector('.nav-btn').classList.add('active');
+            }
+        });
+    </script>
+
+    <script>
+        const whispers = [
+            "One sheep plus two sheep is arithmetic... what number does it equal?",
+            "Draw directly on the tablet. Try Arabic or Roman numerals."
+        ];
+        let wIndex = 0;
+        const wEl = document.createElement('div');
+        wEl.id = 'whisper-text';
+        wEl.innerText = whispers[0];
+        document.body.appendChild(wEl);
+
+        setInterval(() => {
+            wEl.style.opacity = 0;
+            setTimeout(() => {
+                wIndex = (wIndex + 1) % whispers.length;
+                wEl.innerText = whispers[wIndex];
+                wEl.style.opacity = 1;
+            }, 1500);
+        }, 6000);
+    </script>
+</body>
+
+</html>

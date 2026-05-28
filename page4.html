@@ -1,0 +1,986 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <title>Tablet IV - Toshiba 1100</title>
+    <style>
+        html,
+        body {
+            height: 100%;
+            margin: 0;
+            overflow: hidden;
+            user-select: none;
+            background-color: #0a0a0a;
+        }
+
+        body {
+            font-family: Tahoma, "MS Sans Serif", Arial, sans-serif;
+        }
+
+        .container,
+        .weathered-text {
+            display: none;
+        }
+
+        #scene {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 100vw;
+            height: calc(100vw * 3 / 4);
+            min-height: 100vh;
+            min-width: calc(100vh * 4 / 3);
+            background-image: url("images/laptop ish.jpeg");
+            background-size: cover;
+            background-position: center center;
+            container-type: size;
+        }
+
+        #screen-tilt {
+            position: absolute;
+            top: 17.2%;
+            left: 49.2%;
+            width: 51.8%;
+            height: 37.5%;
+            transform: translateX(-50%) perspective(720px) rotateX(5.5deg);
+            transform-origin: 50% 100%;
+        }
+
+        #win-screen {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            box-sizing: border-box;
+            border: 2px solid #000;
+            border-radius: 2px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            z-index: 50;
+            box-shadow:
+                inset 0 0 18px rgba(0, 0, 0, 0.55),
+                0 0 0 1px rgba(255, 255, 255, 0.08);
+        }
+
+        .desktop {
+            flex: 1;
+            position: relative;
+            background: #3a6ea5 url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8'%3E%3Crect width='4' height='4' fill='%233a6ea5'/%3E%3Crect x='4' y='4' width='4' height='4' fill='%233a6ea5'/%3E%3Crect x='4' width='4' height='4' fill='%234578b5'/%3E%3Crect y='4' width='4' height='4' fill='%234578b5'/%3E%3C/svg%3E");
+            padding: 0.6cqw;
+        }
+
+        .desktop-icons {
+            display: flex;
+            flex-direction: column;
+            gap: 0.55cqw;
+            width: 5.5cqw;
+        }
+
+        .desk-icon {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.15cqw;
+            width: 5.5cqw;
+            padding: 0.2cqw;
+            border: 1px solid transparent;
+            cursor: default;
+            text-align: center;
+        }
+
+        .desk-icon:hover,
+        .desk-icon.selected {
+            background: rgba(11, 97, 255, 0.35);
+            border: 1px dotted rgba(255, 255, 255, 0.65);
+        }
+
+        .desk-icon img {
+            width: 2.2cqw;
+            height: 2.2cqw;
+        }
+
+        .desk-icon span {
+            font-size: 0.95cqw;
+            color: #fff;
+            text-shadow: 1px 1px 1px #000;
+            line-height: 1.1;
+        }
+
+        .win-window {
+            position: absolute;
+            top: 14%;
+            left: 18%;
+            width: 68%;
+            height: 64%;
+            border: 2px solid;
+            border-color: #fff #404040 #404040 #fff;
+            background: #ece9d8;
+            box-shadow: 2px 2px 6px rgba(0, 0, 0, 0.45);
+            display: flex;
+            flex-direction: column;
+            font-size: 1.05cqw;
+            color: #000;
+        }
+
+        .title-bar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 2.1cqw;
+            padding: 0 0.25cqw 0 0.4cqw;
+            background: linear-gradient(180deg, #0997ff 0%, #0053ee 8%, #0050ee 40%, #06f 88%, #06f 93%, #005bff 95%, #003dd1 96%, #003dd1 100%);
+            color: #fff;
+            font-weight: bold;
+            font-size: 1.05cqw;
+        }
+
+        .title-buttons {
+            display: flex;
+            gap: 0.15cqw;
+        }
+
+        .title-buttons button {
+            width: 1.65cqw;
+            height: 1.45cqw;
+            border: 1px solid;
+            border-color: #fff #404040 #404040 #fff;
+            background: #c0c0c0;
+            font-size: 0.85cqw;
+            padding: 0;
+            cursor: default;
+        }
+
+        .toolbar {
+            display: flex;
+            gap: 0.35cqw;
+            padding: 0.2cqw 0.4cqw;
+            background: #ece9d8;
+            border-bottom: 1px solid #aca899;
+            font-size: 0.95cqw;
+        }
+
+        .toolbar button {
+            border: 1px solid;
+            border-color: #fff #404040 #404040 #fff;
+            background: #ece9d8;
+            padding: 0.1cqw 0.35cqw;
+            font-size: 0.9cqw;
+            cursor: default;
+        }
+
+        .window-body {
+            flex: 1;
+            display: flex;
+            padding: 0.35cqw;
+            gap: 0.35cqw;
+            background: #fff;
+            margin: 0.2cqw;
+            border: 1px solid #aca899;
+            overflow: hidden;
+            min-height: 0;
+        }
+
+        .tree-pane {
+            width: 38%;
+            border: 1px solid #7f9db9;
+            background: #fff;
+            padding: 0.2cqw;
+            font-size: 0.92cqw;
+            overflow: auto;
+        }
+
+        .tree-root {
+            font-weight: bold;
+            margin-bottom: 0.2cqw;
+        }
+
+        .tree-folder {
+            cursor: default;
+            padding: 0.08cqw 0.15cqw;
+            white-space: nowrap;
+        }
+
+        .tree-folder:hover,
+        .tree-folder.active {
+            background: #316ac5;
+            color: #fff;
+        }
+
+        .tree-folder .chevron {
+            display: inline-block;
+            width: 0.9cqw;
+        }
+
+        .tree-children {
+            padding-left: 0.9cqw;
+            display: none;
+        }
+
+        .tree-children.open {
+            display: block;
+        }
+
+        .content-pane {
+            flex: 1;
+            border: 1px solid #7f9db9;
+            background: #fff;
+            padding: 0.35cqw;
+            font-size: 0.92cqw;
+            overflow: auto;
+            min-width: 0;
+        }
+
+        .folder-hint {
+            color: #444;
+            margin: 0 0 0.35cqw;
+            font-size: 0.88cqw;
+        }
+
+        .file-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 0.35cqw;
+        }
+
+        .file-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            padding: 0.25cqw;
+            border: 1px solid transparent;
+            cursor: default;
+        }
+
+        .file-item:hover,
+        .file-item.selected {
+            background: #316ac5;
+            color: #fff;
+            border: 1px dotted #fff;
+        }
+
+        .file-item img {
+            width: 2.4cqw;
+            height: 2.4cqw;
+            object-fit: cover;
+            border: 1px solid #808080;
+            background: #c0c0c0;
+        }
+
+        .file-item .thumb-video {
+            width: 2.4cqw;
+            height: 2.4cqw;
+            background: #000;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2cqw;
+            border: 1px solid #808080;
+        }
+
+        .file-item span {
+            margin-top: 0.15cqw;
+            font-size: 0.82cqw;
+            word-break: break-all;
+        }
+
+        .file-view h2 {
+            margin: 0 0 0.3cqw;
+            font-size: 1.1cqw;
+        }
+
+        .file-view pre {
+            font-family: "Courier New", monospace;
+            font-size: 0.9cqw;
+            white-space: pre-wrap;
+            background: #ffffe1;
+            border: 1px solid #aca899;
+            padding: 0.4cqw;
+            margin: 0.35cqw 0;
+        }
+
+        .file-view img.preview {
+            max-width: 100%;
+            max-height: 9cqw;
+            border: 2px inset #aca899;
+            margin-top: 0.3cqw;
+            image-rendering: auto;
+        }
+
+        .media-player {
+            background: #000;
+            border: 2px inset #aca899;
+            padding: 0.25cqw;
+            margin-top: 0.3cqw;
+        }
+
+        .media-player video,
+        .media-player img {
+            width: 100%;
+            max-height: 10cqw;
+            display: block;
+        }
+
+        .media-controls {
+            display: flex;
+            gap: 0.3cqw;
+            margin-top: 0.25cqw;
+            color: #fff;
+            font-size: 0.85cqw;
+        }
+
+        .status-bar {
+            display: flex;
+            gap: 0.2cqw;
+            padding: 0.15cqw;
+            background: #ece9d8;
+            border-top: 1px solid #fff;
+            font-size: 0.88cqw;
+        }
+
+        .status-bar div {
+            flex: 1;
+            border: 1px solid;
+            border-color: #aca899 #fff #fff #aca899;
+            padding: 0.1cqw 0.3cqw;
+        }
+
+        .taskbar {
+            height: 3.2cqw;
+            background: linear-gradient(180deg, #3ba5ff 0%, #256ef0 45%, #1d5fd8 100%);
+            border-top: 1px solid #4aa3ff;
+            display: flex;
+            align-items: center;
+            padding: 0.15cqw 0.25cqw;
+            gap: 0.25cqw;
+            flex-shrink: 0;
+        }
+
+        .start-btn {
+            display: flex;
+            align-items: center;
+            height: 2.5cqw;
+            padding: 0 0.55cqw;
+            border-radius: 0.35cqw;
+            border: 1px solid rgba(0, 0, 0, 0.35);
+            background: linear-gradient(180deg, #3dd15c 0%, #1e9b33 55%, #168728 100%);
+            color: #fff;
+            font-weight: bold;
+            font-size: 1.05cqw;
+            cursor: default;
+        }
+
+        .task-btn {
+            min-width: 8cqw;
+            max-width: 14cqw;
+            height: 2.35cqw;
+            padding: 0 0.45cqw;
+            border: 1px solid rgba(0, 0, 0, 0.35);
+            background: linear-gradient(180deg, #3d7fe8 0%, #1f5fc8 100%);
+            color: #fff;
+            font-size: 0.95cqw;
+            overflow: hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+        }
+
+        .task-btn.pressed {
+            background: linear-gradient(180deg, #fff 0%, #d8e8ff 100%);
+            color: #000;
+        }
+
+        .tray {
+            margin-left: auto;
+            display: flex;
+            align-items: center;
+            gap: 0.35cqw;
+            padding: 0 0.35cqw;
+            height: 2.2cqw;
+            background: rgba(16, 66, 157, 0.55);
+            border: 1px solid rgba(0, 0, 0, 0.25);
+            font-size: 0.9cqw;
+            color: #fff;
+        }
+
+        .start-menu {
+            position: absolute;
+            left: 0.25cqw;
+            bottom: 3.35cqw;
+            width: 14cqw;
+            background: #fff;
+            border: 2px solid;
+            border-color: #fff #404040 #404040 #fff;
+            box-shadow: 3px 3px 8px rgba(0, 0, 0, 0.45);
+            display: none;
+            z-index: 80;
+            font-size: 1cqw;
+        }
+
+        .start-menu.open { display: block; }
+
+        .start-menu-header {
+            background: linear-gradient(180deg, #3ba5ff 0%, #1d5fd8 100%);
+            color: #fff;
+            padding: 0.5cqw;
+            font-weight: bold;
+        }
+
+        .start-menu-items div {
+            padding: 0.3cqw 0.65cqw;
+            cursor: default;
+        }
+
+        .start-menu-items div:hover {
+            background: #316ac5;
+            color: #fff;
+        }
+
+        .crt-overlay {
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+            background: repeating-linear-gradient(0deg, rgba(0,0,0,0.06) 0px, rgba(0,0,0,0.06) 1px, transparent 1px, transparent 3px);
+            z-index: 60;
+            mix-blend-mode: multiply;
+        }
+
+        .nav-btn {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            padding: 15px 30px;
+            background-color: rgba(20, 20, 20, 0.7);
+            color: rgba(255, 180, 120, 0.8);
+            text-decoration: none;
+            font-family: 'Papyrus', cursive;
+            font-weight: bold;
+            font-size: 28px;
+            border: 2px solid rgba(0, 0, 0, 0.8);
+            border-radius: 12px;
+            z-index: 100;
+            display: none;
+        }
+
+        .nav-btn.active {
+            display: block;
+            animation: pulseGlow 1.5s infinite;
+        }
+
+        @keyframes pulseGlow {
+            0%, 100% { box-shadow: 0 0 10px rgba(255, 180, 120, 0.6); }
+            50% { box-shadow: 0 0 30px rgba(255, 200, 150, 1); }
+        }
+
+        #whisper-text {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: rgba(255, 255, 255, 0.85);
+            font-family: 'Papyrus', cursive;
+            font-size: 34px;
+            text-align: center;
+            z-index: 90;
+            pointer-events: none;
+            text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.9);
+            width: 80%;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="scene">
+        <div id="screen-tilt">
+            <div id="win-screen">
+                <div class="desktop">
+                    <div class="desktop-icons">
+                        <div class="desk-icon selected" data-open="C:/">
+                            <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect x='4' y='6' width='24' height='16' fill='%23ece9d8' stroke='%23000'/%3E%3Crect x='6' y='8' width='20' height='10' fill='%233a6ea5'/%3E%3Crect x='12' y='22' width='8' height='4' fill='%23c0c0c0' stroke='%23000'/%3E%3C/svg%3E" alt="">
+                            <span>My Computer</span>
+                        </div>
+                        <div class="desk-icon" data-open="C:/README.TXT">
+                            <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cpath d='M6 4h14l6 6v18H6z' fill='%23fff8dc' stroke='%23000'/%3E%3Cpath d='M20 4v6h6' fill='%23ece9d8' stroke='%23000'/%3E%3C/svg%3E" alt="">
+                            <span>README.TXT</span>
+                        </div>
+                    </div>
+
+                    <div class="win-window" id="main-window">
+                        <div class="title-bar">
+                            <span id="window-title">C:\</span>
+                            <div class="title-buttons">
+                                <button type="button">_</button>
+                                <button type="button">□</button>
+                                <button type="button" id="close-btn">×</button>
+                            </div>
+                        </div>
+                        <div class="toolbar">
+                            <button type="button" id="btn-back">◄ Back</button>
+                            <button type="button" id="btn-up">▲ Up</button>
+                        </div>
+                        <div class="window-body">
+                            <div class="tree-pane" id="tree-pane"></div>
+                            <div class="content-pane" id="content-pane"></div>
+                        </div>
+                        <div class="status-bar">
+                            <div id="status-left">Select a folder</div>
+                            <div id="status-right">TOSHIBA 1100</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="start-menu" id="start-menu">
+                    <div class="start-menu-header">TOSHIBA 1100</div>
+                    <div class="start-menu-items">
+                        <div data-path="C:/Documents">Documents</div>
+                        <div data-path="C:/CHAMBER_IV">CHAMBER_IV</div>
+                        <div data-path="C:/My Pictures">My Pictures</div>
+                    </div>
+                </div>
+
+                <div class="taskbar">
+                    <div class="start-btn" id="start-btn">⊞ Start</div>
+                    <div class="task-btn pressed" id="task-explorer">📁 Explorer</div>
+                    <div class="tray"><span>🔊</span><span id="clock">--:--</span></div>
+                </div>
+                <div class="crt-overlay" aria-hidden="true"></div>
+            </div>
+        </div>
+    </div>
+
+    <a href="page5.html" class="nav-btn" id="nav-btn">Next ➔</a>
+
+    <script>
+        const ICONS = {
+            folder: "📁",
+            txt: "📄",
+            img: "🖼️",
+            avi: "🎬"
+        };
+
+        const FILESYSTEM = {
+            "C:/": {
+                label: "Local Disk (C:)",
+                folders: ["Documents", "Program Files", "CHAMBER_IV", "My Pictures", "Archive"],
+                files: ["README.TXT"]
+            },
+            "C:/Documents": {
+                label: "Documents",
+                folders: [],
+                files: ["NOTE.TXT", "memo_1998.txt", "my family.avif"]
+            },
+            "C:/Program Files": {
+                label: "Program Files",
+                folders: ["Accessories"],
+                files: ["readme.txt"]
+            },
+            "C:/Program Files/Accessories": {
+                label: "Accessories",
+                folders: [],
+                files: ["paint_stub.txt"]
+            },
+            "C:/CHAMBER_IV": {
+                label: "CHAMBER_IV",
+                folders: ["LOCKED"],
+                files: ["about_chamber.txt"]
+            },
+            "C:/CHAMBER_IV/LOCKED": {
+                label: "LOCKED",
+                folders: [],
+                files: ["HINT.TXT"]
+            },
+            "C:/My Pictures": {
+                label: "My Pictures",
+                folders: ["Scans"],
+                files: ["internet meme.mov", "my family.avif"]
+            },
+            "C:/My Pictures/Scans": {
+                label: "Scans",
+                folders: [],
+                files: ["my family.avif"]
+            },
+            "C:/Archive": {
+                label: "Archive",
+                folders: ["backup"],
+                files: ["FINAL.TXT", "tape_log.txt"]
+            },
+            "C:/Archive/backup": {
+                label: "backup",
+                folders: [],
+                files: ["fragment.txt"]
+            }
+        };
+
+        const FILE_DATA = {
+            "C:/README.TXT": {
+                type: "txt",
+                title: "README.TXT — Notepad",
+                body: "CHAMBER IV — TOSHIBA PORTÉGÉ 1100\n\nThe third terminal unlocked this machine.\n\n>>> Open NOTE.TXT inside the Documents folder."
+            },
+            "C:/Documents/NOTE.TXT": {
+                type: "txt",
+                title: "NOTE.TXT — Notepad",
+                body: "Operator log — 14 Oct 2001\n\nThe lock file is not on the desktop.\n\n>>> Open HINT.TXT in folder:\n    C:\\CHAMBER_IV\\LOCKED\\"
+            },
+            "C:/Documents/memo_1998.txt": {
+                type: "txt",
+                title: "memo_1998.txt",
+                body: "Remember to defrag the laptop before the exhibit opens."
+            },
+            "C:/Documents/my family.avif": {
+                type: "img",
+                title: "my family.avif",
+                src: "images/According-to-Jim.avif",
+                caption: "Documents"
+            },
+            "C:/Program Files/readme.txt": {
+                type: "txt",
+                title: "readme.txt",
+                body: "Microsoft Program Files\n\nNothing helpful here. Check Archive."
+            },
+            "C:/Program Files/Accessories/paint_stub.txt": {
+                type: "txt",
+                title: "paint_stub.txt",
+                body: "Paint is not installed on this build."
+            },
+            "C:/CHAMBER_IV/about_chamber.txt": {
+                type: "txt",
+                title: "about_chamber.txt",
+                body: "Fourth chamber catalog entry.\n\nSubfolder LOCKED holds the hint chain."
+            },
+            "C:/CHAMBER_IV/LOCKED/HINT.TXT": {
+                type: "txt",
+                title: "HINT.TXT — Notepad",
+                body: "HINT — CLASSIFIED\n\n>>> Read FINAL.TXT in the Archive folder."
+            },
+            "C:/My Pictures/internet meme.mov": {
+                type: "mov",
+                title: "internet meme.mov — Media Player",
+                src: "images/Hacked.mov",
+                caption: "My Pictures"
+            },
+            "C:/My Pictures/my family.avif": {
+                type: "img",
+                title: "my family.avif",
+                src: "images/According-to-Jim.avif",
+                caption: "My Pictures"
+            },
+            "C:/My Pictures/Scans/my family.avif": {
+                type: "img",
+                title: "my family.avif",
+                src: "images/According-to-Jim.avif",
+                caption: "Scans"
+            },
+            "C:/Archive/FINAL.TXT": {
+                type: "txt",
+                title: "FINAL.TXT — Notepad",
+                body: "FINAL TRANSFER AUTHORIZED\n\nThe Toshiba is online. The fifth chamber awaits.\n\nPress Next when you are ready."
+            },
+            "C:/Archive/tape_log.txt": {
+                type: "txt",
+                title: "tape_log.txt",
+                body: "Backup tape #4 — checksum OK."
+            },
+            "C:/Archive/backup/fragment.txt": {
+                type: "txt",
+                title: "fragment.txt",
+                body: "...the path is never on the desktop twice..."
+            }
+        };
+
+        let currentPath = "C:/";
+        let pathHistory = [];
+        let chamberUnlocked = false;
+        const progress = { readme: false, note: false, hint: false };
+
+        const FILE_CHAIN = {
+            "C:/README.TXT": { requires: null, sets: "readme" },
+            "C:/Documents/NOTE.TXT": { requires: "readme", sets: "note" },
+            "C:/CHAMBER_IV/LOCKED/HINT.TXT": { requires: "note", sets: "hint" },
+            "C:/Archive/FINAL.TXT": { requires: "hint", sets: null, unlock: true }
+        };
+
+        const BLOCKED_MSG = {
+            readme: "Open README.TXT on the desktop first.",
+            note: "Open NOTE.TXT in the Documents folder first.",
+            hint: "Open HINT.TXT in CHAMBER_IV\\LOCKED first."
+        };
+
+        const treePane = document.getElementById("tree-pane");
+        const contentPane = document.getElementById("content-pane");
+        const windowTitle = document.getElementById("window-title");
+        const statusLeft = document.getElementById("status-left");
+        const navBtn = document.getElementById("nav-btn");
+        const startBtn = document.getElementById("start-btn");
+        const startMenu = document.getElementById("start-menu");
+        const clockEl = document.getElementById("clock");
+
+        function updateClock() {
+            const now = new Date();
+            let h = now.getHours();
+            const m = String(now.getMinutes()).padStart(2, "0");
+            const ampm = h >= 12 ? "PM" : "AM";
+            h = h % 12 || 12;
+            clockEl.textContent = `${h}:${m} ${ampm}`;
+        }
+        updateClock();
+        setInterval(updateClock, 30000);
+
+        function buildTree() {
+            const paths = Object.keys(FILESYSTEM).sort();
+            treePane.innerHTML = '<div class="tree-root">🖥️ TOSHIBA 1100</div>';
+            const root = document.createElement("div");
+            root.dataset.path = "C:/";
+            root.className = "tree-folder active";
+            root.innerHTML = '<span class="chevron">▼</span> ' + ICONS.folder + ' Local Disk (C:)';
+            root.addEventListener("click", (e) => {
+                e.stopPropagation();
+                navigateTo("C:/");
+            });
+            treePane.appendChild(root);
+
+            const childContainer = document.createElement("div");
+            childContainer.className = "tree-children open";
+            childContainer.id = "tree-children-root";
+
+            FILESYSTEM["C:/"].folders.forEach(name => {
+                appendTreeFolder(childContainer, "C:/" + name, 0);
+            });
+            treePane.appendChild(childContainer);
+        }
+
+        function appendTreeFolder(parent, path, depth) {
+            const node = FILESYSTEM[path];
+            if (!node) return;
+
+            const row = document.createElement("div");
+            row.className = "tree-folder";
+            row.dataset.path = path;
+            const hasKids = (node.folders && node.folders.length > 0);
+            row.innerHTML = `<span class="chevron">${hasKids ? "▶" : "·"}</span> ${ICONS.folder} ${node.label}`;
+
+            row.addEventListener("click", (e) => {
+                e.stopPropagation();
+                document.querySelectorAll(".tree-folder").forEach(el => el.classList.remove("active"));
+                row.classList.add("active");
+                navigateTo(path);
+
+                if (hasKids) {
+                    const kids = row.nextElementSibling;
+                    if (kids && kids.classList.contains("tree-children")) {
+                        const open = kids.classList.toggle("open");
+                        row.querySelector(".chevron").textContent = open ? "▼" : "▶";
+                    }
+                }
+            });
+
+            parent.appendChild(row);
+
+            if (hasKids) {
+                const kids = document.createElement("div");
+                kids.className = "tree-children";
+                node.folders.forEach(name => {
+                    const childPath = path.endsWith("/") ? path + name : path + "/" + name;
+                    appendTreeFolder(kids, childPath, depth + 1);
+                });
+                parent.appendChild(kids);
+            }
+        }
+
+        function navigateTo(path, pushHistory = true) {
+            if (!FILESYSTEM[path]) return;
+            if (pushHistory && currentPath !== path) pathHistory.push(currentPath);
+            currentPath = path;
+            windowTitle.textContent = path.replace(/\//g, "\\");
+            renderFolder(path);
+            document.querySelectorAll(".tree-folder").forEach(el => {
+                el.classList.toggle("active", el.dataset.path === path);
+            });
+        }
+
+        function filePathFor(path, name) {
+            return path === "C:/" ? "C:/" + name : path + "/" + name;
+        }
+
+        function isFileVisible(filePath) {
+            if (filePath === "C:/Archive/FINAL.TXT") return progress.hint;
+            return true;
+        }
+
+        function renderFolder(path) {
+            const node = FILESYSTEM[path];
+            const visibleFiles = node.files.filter(name => isFileVisible(filePathFor(path, name)));
+            const count = node.folders.length + visibleFiles.length;
+            statusLeft.textContent = `${count} object(s)`;
+
+            let html = `<p class="folder-hint">Address: <strong>${path.replace(/\//g, "\\")}</strong></p><div class="file-grid">`;
+
+            node.folders.forEach(name => {
+                const childPath = filePathFor(path, name);
+                html += `<div class="file-item" data-kind="folder" data-path="${childPath}">
+                    <span style="font-size:2cqw">${ICONS.folder}</span>
+                    <span>${name}</span></div>`;
+            });
+
+            visibleFiles.forEach(name => {
+                const filePath = filePathFor(path, name);
+                const data = FILE_DATA[filePath];
+                const kind = data ? data.type : "txt";
+                let thumb = `<span style="font-size:2cqw">${ICONS[kind] || "📄"}</span>`;
+                if (kind === "img" && data.src) {
+                    thumb = `<img src="${data.src}" alt="">`;
+                } else if (kind === "avi" || kind === "mov") {
+                    thumb = `<div class="thumb-video">▶</div>`;
+                }
+                html += `<div class="file-item" data-kind="file" data-path="${filePath}">${thumb}<span>${name}</span></div>`;
+            });
+
+            html += "</div>";
+            contentPane.innerHTML = html;
+
+            contentPane.querySelectorAll(".file-item").forEach(item => {
+                item.addEventListener("dblclick", () => {
+                    if (item.dataset.kind === "folder") navigateTo(item.dataset.path);
+                    else openFile(item.dataset.path);
+                });
+                item.addEventListener("click", () => {
+                    contentPane.querySelectorAll(".file-item").forEach(i => i.classList.remove("selected"));
+                    item.classList.add("selected");
+                });
+            });
+        }
+
+        function showBlocked(needs) {
+            windowTitle.textContent = "Access Denied";
+            statusLeft.textContent = "Locked";
+            contentPane.innerHTML = `<div class="file-view"><h2>Access Denied</h2>
+                <pre>${escapeHtml(BLOCKED_MSG[needs])}</pre></div>`;
+        }
+
+        function openFile(path) {
+            const data = FILE_DATA[path];
+            if (!data) return;
+
+            const chain = FILE_CHAIN[path];
+            if (chain && chain.requires && !progress[chain.requires]) {
+                showBlocked(chain.requires);
+                return;
+            }
+
+            windowTitle.textContent = data.title || path;
+            statusLeft.textContent = path.split("/").pop();
+
+            if (data.type === "txt") {
+                contentPane.innerHTML = `<div class="file-view"><h2>${path.split("/").pop()}</h2><pre>${escapeHtml(data.body)}</pre></div>`;
+            } else if (data.type === "img") {
+                contentPane.innerHTML = `<div class="file-view"><h2>${path.split("/").pop()}</h2>
+                    <p>${escapeHtml(data.caption || "")}</p>
+                    <img class="preview" src="${data.src}" alt=""></div>`;
+            } else if (data.type === "avi" || data.type === "mov") {
+                contentPane.innerHTML = `<div class="file-view"><h2>${escapeHtml(data.title)}</h2>
+                    <p>${escapeHtml(data.caption || "")}</p>
+                    <div class="media-player">
+                        <video controls preload="metadata" src="${data.src}"></video>
+                        <div class="media-controls"><span>▶ Play</span><span>⏸ Pause</span><span>⏹ Stop</span> · Windows Media Player</div>
+                    </div></div>`;
+            }
+
+            if (chain && chain.sets) {
+                progress[chain.sets] = true;
+                if (chain.sets === "hint" && currentPath === "C:/Archive") {
+                    renderFolder(currentPath);
+                }
+            }
+            if (chain && chain.unlock) unlockChamber();
+        }
+
+        function unlockChamber() {
+            if (chamberUnlocked) return;
+            chamberUnlocked = true;
+            navBtn.classList.add("active");
+            statusLeft.textContent = "Chamber unlocked";
+        }
+
+        function escapeHtml(str) {
+            return str.replace(/[&<>"']/g, c => ({
+                "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
+            }[c]));
+        }
+
+        document.getElementById("btn-back").addEventListener("click", () => {
+            if (pathHistory.length) navigateTo(pathHistory.pop(), false);
+        });
+
+        document.getElementById("btn-up").addEventListener("click", () => {
+            if (currentPath === "C:/") return;
+            const idx = currentPath.lastIndexOf("/");
+            const parent = idx <= 2 ? "C:/" : currentPath.slice(0, idx);
+            navigateTo(parent);
+        });
+
+        document.getElementById("close-btn").addEventListener("click", () => {
+            document.getElementById("main-window").style.display = "none";
+        });
+
+        startBtn.addEventListener("click", (e) => {
+            e.stopPropagation();
+            startMenu.classList.toggle("open");
+        });
+        document.addEventListener("click", () => startMenu.classList.remove("open"));
+        startMenu.addEventListener("click", (e) => {
+            e.stopPropagation();
+            const item = e.target.closest("[data-path]");
+            if (item) {
+                navigateTo(item.dataset.path);
+                startMenu.classList.remove("open");
+            }
+        });
+
+        document.querySelectorAll(".desk-icon").forEach(icon => {
+            icon.addEventListener("dblclick", () => {
+                const target = icon.dataset.open;
+                document.getElementById("main-window").style.display = "flex";
+                if (target.endsWith(".TXT") || target.endsWith(".txt")) openFile(target);
+                else navigateTo(target);
+            });
+        });
+
+        buildTree();
+        navigateTo("C:/", false);
+
+        const whispers = [
+            "Double-click README.TXT on the desktop to start.",
+            "Follow the clue trail: README → NOTE → HINT → FINAL."
+        ];
+        let wIndex = 0;
+        const wEl = document.createElement("div");
+        wEl.id = "whisper-text";
+        wEl.innerText = whispers[0];
+        document.body.appendChild(wEl);
+        setInterval(() => {
+            wEl.style.opacity = 0;
+            setTimeout(() => {
+                wIndex = (wIndex + 1) % whispers.length;
+                wEl.innerText = whispers[wIndex];
+                wEl.style.opacity = 1;
+            }, 1500);
+        }, 6000);
+
+        // Developer bypass
+        let devBypass = "";
+        window.addEventListener('keydown', (e) => {
+            devBypass += e.key;
+            if (devBypass.endsWith('OPENSEASAME')) {
+                document.getElementById('nav-btn').classList.add('active');
+            }
+        });
+    </script>
+</body>
+
+</html>

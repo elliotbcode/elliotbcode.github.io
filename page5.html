@@ -1,0 +1,921 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <title>Tablet V — YouTube 2007</title>
+    <style>
+        html,
+        body {
+            height: 100%;
+            margin: 0;
+            overflow: hidden;
+            user-select: none;
+        }
+
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: 12px;
+            color: #333;
+        }
+
+        .container,
+        .weathered-text {
+            display: none;
+        }
+
+        /* Fills viewport with photo — no black bars */
+        #viewport {
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-image: url("images/new computer.jpeg");
+            background-size: cover;
+            background-position: center center;
+            background-repeat: no-repeat;
+        }
+
+        /* Fixed design canvas: background + screen scale together */
+        #scene {
+            position: relative;
+            width: 1920px;
+            height: 1080px;
+            flex-shrink: 0;
+            background-image: url("images/new computer.jpeg");
+            background-size: 1950px auto;
+            background-position: -75px 0;
+            background-repeat: no-repeat;
+            transform: scale(max(100vw / 1920, 100vh / 1080));
+            transform-origin: center center;
+        }
+
+        #screen-tilt {
+            position: absolute;
+            top: 166px;
+            left: 380px;
+            width: 1081px;
+            height: 683px;
+        }
+
+        #yt-2007 {
+            width: 100%;
+            height: 100%;
+            background: #fff;
+            border: 2px solid #999;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            box-shadow: inset 0 0 12px rgba(0, 0, 0, 0.35);
+        }
+
+        .yt-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 8px;
+            border-bottom: 1px solid #ccc;
+            background: #fff;
+            flex-shrink: 0;
+        }
+
+        .yt-logo {
+            font-size: 18px;
+            font-weight: bold;
+            letter-spacing: -0.05em;
+            color: #03c;
+            cursor: pointer;
+            text-decoration: none;
+        }
+
+        .yt-logo .tube {
+            background: linear-gradient(#c00, #900);
+            color: #fff;
+            padding: 1px 4px;
+            border-radius: 2px;
+            margin-left: 2px;
+        }
+
+        .yt-search {
+            flex: 1;
+            display: flex;
+            gap: 4px;
+        }
+
+        .yt-search input {
+            flex: 1;
+            font-size: 13px;
+            padding: 4px 6px;
+            border: 1px solid #999;
+            user-select: text;
+        }
+
+        .yt-search button {
+            font-size: 12px;
+            padding: 4px 10px;
+            background: #f0f0f0;
+            border: 1px solid #999;
+            cursor: pointer;
+        }
+
+        .yt-nav {
+            display: flex;
+            gap: 14px;
+            padding: 6px 10px;
+            background: #efefef;
+            border-bottom: 1px solid #ccc;
+            font-size: 13px;
+            flex-shrink: 0;
+        }
+
+        .yt-nav a {
+            color: #03c;
+            cursor: pointer;
+            text-decoration: underline;
+        }
+
+        .yt-nav a.active {
+            color: #000;
+            font-weight: bold;
+            text-decoration: none;
+            cursor: default;
+        }
+
+        .yt-body {
+            flex: 1;
+            overflow: auto;
+            background: #fff;
+            padding: 8px;
+        }
+
+        .yt-banner {
+            background: #ffc;
+            border: 1px solid #cc9;
+            padding: 8px 10px;
+            margin-bottom: 10px;
+            font-size: 13px;
+            line-height: 1.35;
+        }
+
+        .yt-banner a {
+            color: #03c;
+            cursor: pointer;
+            text-decoration: underline;
+        }
+
+        #screen-tilt,
+        #screen-tilt * {
+            pointer-events: auto;
+        }
+
+        .yt-link-list {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            margin-bottom: 10px;
+        }
+
+        .yt-link-list a {
+            color: #03c;
+            cursor: pointer;
+            font-size: 13px;
+            text-decoration: underline;
+        }
+
+        .yt-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+        }
+
+        .yt-card {
+            cursor: pointer;
+            position: relative;
+        }
+
+        .yt-card:hover .yt-thumb {
+            outline: 2px solid #03c;
+        }
+
+        .yt-card.next-to-click {
+            animation: ringPulse 1.5s infinite;
+        }
+
+        .yt-card.next-to-click .yt-thumb {
+            outline: 3px solid #ffaa00;
+            box-shadow: 0 0 0 8px rgba(255, 170, 0, 0.3), 0 0 0 15px rgba(255, 170, 0, 0.15);
+        }
+
+        @keyframes ringPulse {
+            0%, 100% { filter: drop-shadow(0 0 0 0 rgba(255, 170, 0, 0.6)); }
+            50% { filter: drop-shadow(0 0 0 6px rgba(255, 170, 0, 0.3)); }
+        }
+
+        .yt-thumb {
+            width: 100%;
+            aspect-ratio: 4/3;
+            background: #111;
+            border: 1px solid #999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #ccc;
+            font-size: 28px;
+            overflow: hidden;
+            cursor: pointer;
+        }
+
+        .yt-thumb img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            pointer-events: none;
+        }
+
+        .yt-star {
+            position: absolute;
+            top: 4px;
+            right: 4px;
+            color: #c90;
+            font-size: 16px;
+            text-shadow: 0 0 2px #000;
+            pointer-events: none;
+        }
+
+        .yt-meta {
+            margin-top: 4px;
+            font-size: 12px;
+            line-height: 1.25;
+        }
+
+        .yt-meta .title {
+            color: #03c;
+            font-weight: bold;
+            cursor: pointer;
+            text-decoration: underline;
+        }
+
+        .yt-meta .title:hover {
+            text-decoration: underline;
+        }
+
+        .yt-meta .byline {
+            color: #666;
+        }
+
+        .yt-meta .byline a {
+            color: #03c;
+            cursor: pointer;
+            text-decoration: underline;
+        }
+
+        .yt-watch {
+            display: none;
+            flex-direction: column;
+            gap: 0.35cqw;
+        }
+
+        .yt-watch.open {
+            display: flex;
+        }
+
+        .yt-home.hidden {
+            display: none;
+        }
+
+        .yt-player-box {
+            width: 100%;
+            aspect-ratio: 4/3;
+            background: #000;
+            border: 1px solid #999;
+        }
+
+        .yt-player-box iframe,
+        .yt-player-box video {
+            width: 100%;
+            height: 100%;
+            border: 0;
+        }
+
+        .yt-placeholder {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: #aaa;
+            font-size: 13px;
+            text-align: center;
+            padding: 8px;
+            box-sizing: border-box;
+        }
+
+        .yt-placeholder img {
+            max-width: 70%;
+            max-height: 65%;
+            object-fit: contain;
+            opacity: 0.85;
+        }
+
+        .final-overlay {
+            position: fixed;
+            left: 50%;
+            top: 50%;
+            transform-origin: center center;
+            width: 1920px;
+            height: 1080px;
+            background: rgba(0, 0, 0, 0.95);
+            z-index: 9999;
+            overflow: auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .final-overlay .final-screen {
+            background: transparent;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .final-screen img,
+        .final-overlay img {
+            width: 1920px;
+            height: 1080px;
+            display: block;
+        }
+
+        .yt-watch-title {
+            font-size: 16px;
+            font-weight: bold;
+        }
+
+        .yt-watch-title a {
+            color: #03c;
+            cursor: pointer;
+            text-decoration: underline;
+        }
+
+        .yt-watch-info {
+            color: #666;
+            font-size: 13px;
+        }
+
+        .yt-watch-info a {
+            color: #03c;
+            cursor: pointer;
+            text-decoration: underline;
+        }
+
+        .yt-back {
+            color: #03c;
+            text-decoration: underline;
+            cursor: pointer;
+            font-size: 13px;
+            width: fit-content;
+        }
+
+        .yt-external {
+            margin-top: 6px;
+            font-size: 13px;
+        }
+
+        .yt-external a {
+            color: #03c;
+            cursor: pointer;
+            text-decoration: underline;
+        }
+
+        .yt-progress {
+            margin-top: 10px;
+            padding: 8px;
+            background: #e8ffe8;
+            border: 1px solid #9c9;
+            font-size: 13px;
+            display: none;
+        }
+
+        .yt-progress.visible {
+            display: block;
+        }
+
+        .nav-btn {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            padding: 15px 30px;
+            background-color: rgba(20, 20, 20, 0.7);
+            color: rgba(255, 180, 120, 0.8);
+            text-decoration: none;
+            font-family: 'Papyrus', cursive;
+            font-weight: bold;
+            font-size: 28px;
+            border: 2px solid rgba(0, 0, 0, 0.8);
+            border-radius: 12px;
+            z-index: 100;
+            display: none;
+        }
+
+        .nav-btn.active {
+            display: block;
+            animation: pulseGlow 1.5s infinite;
+        }
+
+        @keyframes pulseGlow {
+            0%, 100% { box-shadow: 0 0 10px rgba(255, 180, 120, 0.6); }
+            50% { box-shadow: 0 0 30px rgba(255, 200, 150, 1); }
+        }
+
+        #whisper-text {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: rgba(255, 255, 255, 0.85);
+            font-family: 'Papyrus', cursive;
+            font-size: 28px;
+            text-align: center;
+            z-index: 90;
+            pointer-events: none;
+            text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.9);
+            width: 80%;
+        }
+
+
+    </style>
+</head>
+
+<body>
+
+    <div id="viewport">
+    <div id="scene">
+        <div id="screen-tilt">
+            <div id="yt-2007">
+                <div class="yt-header">
+                    <a class="yt-logo" href="#" id="yt-logo">You<span class="tube">Tube</span></a>
+                    <div class="yt-search">
+                        <input type="text" id="yt-search-input" placeholder="Search videos...">
+                        <button type="button" id="yt-search-btn">Search</button>
+                    </div>
+                </div>
+                <div class="yt-nav" id="yt-nav">
+                    <a href="#" class="active" data-nav="home">Videos</a>
+                    <a href="#" data-nav="categories">Categories</a>
+                    <a href="#" data-nav="channels">Channels</a>
+                    <a href="#" data-nav="community">Community</a>
+                </div>
+                <div class="yt-body">
+                    <div class="yt-home" id="yt-home">
+                        <div class="yt-banner" id="yt-banner">
+                            <strong>Chamber V — Broadcast Hub</strong><br>
+                            Click the highlighted video to continue the sequence.
+                        </div>
+                        <div class="yt-link-list" id="yt-link-list" hidden></div>
+                        <div class="yt-grid" id="yt-grid"></div>
+                        <div class="yt-progress" id="yt-progress">★ Progress: 0 / 6</div>
+                    </div>
+                    <div class="yt-watch" id="yt-watch">
+                        <span class="yt-back" id="yt-back">« Back to videos</span>
+                        <div class="yt-player-box" id="yt-player"></div>
+                        <div class="yt-watch-title" id="watch-title"></div>
+                        <div class="yt-watch-info" id="watch-info"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    </div>
+
+    <a href="page6.html" class="nav-btn" id="nav-btn">Next ➔</a>
+
+    <script>
+        /*
+         * ADD YOUR YOUTUBE LINKS HERE
+         * Use a video ID (11 chars) or full URL — e.g. "dQw4w9WgXcQ" or "https://www.youtube.com/watch?v=..."
+         * Leave youtubeId as "" for a placeholder until you add links.
+         */
+        const YOUTUBE_VIDEOS = [
+            {
+                youtubeId: "jNQXAC9IVRw",
+                title: "me at the zoo",
+                user: "jawed",
+                views: "392M views",
+                thumb: "images/zoo.png",
+                starred: true
+            },
+            {
+                youtubeId: "LeAltgu_pbM",
+                title: "my snowboarding skillz",
+                user: "mw",
+                views: "6.5M views",
+                thumb: "images/skillz.png",
+                starred: true
+            },
+            {
+                youtubeId: "s8MDNFaGfT4",
+                title: "its peanut butter jelly time",
+                user: "mycreed",
+                views: "127M views",
+                thumb: "images/peanutt.png",
+                starred: true
+            },
+            {
+                youtubeId: "MYnenUhD8Qg",
+                title: "wii transform",
+                user: "ptacnik",
+                views: "4.2M views",
+                thumb: "images/wii.png",
+                starred: true
+            },
+            {
+                youtubeId: "aBfUFr9SBY0",
+                title: "tribute",
+                user: "gp",
+                views: "8.1M views",
+                thumb: "images/tribute.png",
+                starred: true
+            },
+            {
+                youtubeId: "UGaUKf43r6s",
+                title: "carrie rides a truck",
+                user: "jones4carrie",
+                views: "2.3M views",
+                thumb: "images/truck.png",
+                starred: true
+            }
+        ];
+
+        const navBtn = document.getElementById("nav-btn");
+        const ytGrid = document.getElementById("yt-grid");
+        const ytHome = document.getElementById("yt-home");
+        const ytWatch = document.getElementById("yt-watch");
+        const ytPlayer = document.getElementById("yt-player");
+        const ytProgress = document.getElementById("yt-progress");
+        const ytSearchInput = document.getElementById("yt-search-input");
+        const ytSearchBtn = document.getElementById("yt-search-btn");
+        const ytLinkList = document.getElementById("yt-link-list");
+        const ytNav = document.getElementById("yt-nav");
+
+        let currentNav = "home";
+        let chamberUnlocked = false;
+
+        // Sequence puzzle: choose a random required order of video indices (1..6)
+        let requiredOrder = [];
+        let clickIndex = 0; // how many correct clicks so far
+
+        function shuffle(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
+        }
+
+        function initSequence() {
+            requiredOrder = shuffle([1, 2, 3, 4, 5, 6]);
+            clickIndex = 0;
+            // initialize lights to show the first hint (active)
+            updateLights();
+            console.log('Required order (hidden):', requiredOrder);
+        }
+
+        function updateLights() {
+            document.querySelectorAll('.yt-card').forEach(card => card.classList.remove('next-to-click'));
+            if (Array.isArray(requiredOrder) && clickIndex < requiredOrder.length) {
+                const nextNum = requiredOrder[clickIndex];
+                const nextCard = document.querySelector(`.yt-card:nth-child(${nextNum})`);
+                if (nextCard) {
+                    nextCard.classList.add('next-to-click');
+                }
+            }
+        }
+
+        function resetProgress(showWrongMessage) {
+            clickIndex = 0;
+            if (showWrongMessage) {
+                ytProgress.textContent = '★ Wrong order — start over. Click the highlighted video.';
+            } else {
+                ytProgress.textContent = `★ Progress: ${clickIndex} / ${requiredOrder.length}`;
+            }
+            updateLights();
+        }
+
+        function parseYouTubeId(value) {
+            if (!value || typeof value !== "string") return "";
+            const trimmed = value.trim();
+            if (/^[a-zA-Z0-9_-]{11}$/.test(trimmed)) return trimmed;
+            const match = trimmed.match(/(?:v=|\/embed\/|youtu\.be\/)([a-zA-Z0-9_-]{11})/);
+            return match ? match[1] : "";
+        }
+
+        function renderGrid() {
+            ytGrid.hidden = false;
+            ytLinkList.hidden = true;
+            ytGrid.innerHTML = "";
+            YOUTUBE_VIDEOS.forEach((_, index) => appendVideoCard(index));
+            ytProgress.classList.add("visible");
+        }
+
+        function onVideoClick(index) {
+            const video = YOUTUBE_VIDEOS[index];
+            if (!video || !video.starred) return;
+
+            const clickedNum = index + 1; // 1-indexed
+            const expected = Array.isArray(requiredOrder) ? requiredOrder[clickIndex] : undefined;
+
+            if (Array.isArray(requiredOrder) && clickedNum === expected) {
+                // Correct
+                clickIndex++;
+                ytProgress.textContent = `★ Progress: ${clickIndex} / ${requiredOrder.length}`;
+                if (clickIndex === requiredOrder.length) {
+                    unlockChamber();
+                } else {
+                    updateLights();
+                }
+            } else {
+                // Wrong click — reset progress if a sequence exists
+                if (Array.isArray(requiredOrder)) resetProgress(true);
+            }
+            // Always open the watch panel when a video is clicked
+            openWatch(index);
+        }
+
+        function openWatch(index) {
+            const video = YOUTUBE_VIDEOS[index];
+            const ytId = parseYouTubeId(video.youtubeId);
+
+            ytHome.classList.add("hidden");
+            ytWatch.classList.add("open");
+            const watchTitle = document.getElementById("watch-title");
+            const watchInfo = document.getElementById("watch-info");
+            watchTitle.innerHTML = `<a href="#" id="watch-title-link">${escapeHtml(video.title)}</a>`;
+            watchTitle.querySelector("a").addEventListener("click", (e) => {
+                e.preventDefault();
+                onVideoClick(index);
+            });
+            watchInfo.innerHTML = `<a href="#" data-channel="${escapeHtml(video.user)}">${escapeHtml(video.user)}</a> · ${escapeHtml(video.views)}`;
+            watchInfo.querySelector("a").addEventListener("click", (e) => {
+                e.preventDefault();
+                closeWatch();
+                showChannels(video.user);
+            });
+
+            let playerHtml = "";
+            if (ytId) {
+                playerHtml = `<iframe
+                    src="https://www.youtube.com/embed/${ytId}?rel=0&modestbranding=1"
+                    title="${escapeHtml(video.title)}"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowfullscreen></iframe>
+                    <div class="yt-external"><a href="https://www.youtube.com/watch?v=${ytId}" target="_blank" rel="noopener">Watch on YouTube.com »</a></div>`;
+            } else {
+                const img = video.thumb ? `<img src="${video.thumb}" alt="">` : "";
+                playerHtml = `<div class="yt-placeholder">
+                    ${img}
+                    <p>Video slot — add a YouTube link in page5.html</p>
+                    <p style="font-size:11px;color:#888">YOUTUBE_VIDEOS[${index}].youtubeId</p>
+                </div>`;
+            }
+            ytPlayer.innerHTML = playerHtml;
+        }
+
+        const DEFAULT_BANNER = `<strong>Chamber V — Broadcast Hub</strong><br>Click the highlighted video to continue the sequence.`;
+
+        function goHome() {
+            closeWatch();
+            setNav("home");
+            ytGrid.hidden = false;
+            ytLinkList.hidden = true;
+            if (!chamberUnlocked) {
+                document.getElementById("yt-banner").innerHTML = DEFAULT_BANNER;
+            }
+        }
+
+        function setNav(name) {
+            currentNav = name;
+            ytNav.querySelectorAll("a").forEach(a => {
+                a.classList.toggle("active", a.dataset.nav === name);
+            });
+        }
+
+        function showChannels(highlightUser) {
+            goHome();
+            setNav("channels");
+            ytGrid.hidden = true;
+            ytLinkList.hidden = false;
+            const users = [...new Set(YOUTUBE_VIDEOS.map(v => v.user))];
+            ytLinkList.innerHTML = users.map(u =>
+                `<a href="#" data-channel="${escapeHtml(u)}">${escapeHtml(u)}${u === highlightUser ? " ◄" : ""}</a>`
+            ).join("");
+            ytLinkList.querySelectorAll("a").forEach(a => {
+                a.addEventListener("click", (e) => {
+                    e.preventDefault();
+                    filterByChannel(a.dataset.channel);
+                });
+            });
+        }
+
+        function filterByChannel(user) {
+            setNav("home");
+            ytLinkList.hidden = true;
+            ytGrid.hidden = false;
+            document.getElementById("yt-banner").innerHTML =
+                `<strong>Channel:</strong> <a href="#" id="channel-filter">${escapeHtml(user)}</a> — <a href="#" id="clear-filter">show all videos</a>`;
+            document.getElementById("channel-filter").addEventListener("click", e => { e.preventDefault(); showChannels(user); });
+            document.getElementById("clear-filter").addEventListener("click", e => { e.preventDefault(); goHome(); renderGrid(); });
+            ytGrid.innerHTML = "";
+            YOUTUBE_VIDEOS.forEach((video, index) => {
+                if (video.user !== user) return;
+                appendVideoCard(index);
+            });
+        }
+
+        function appendVideoCard(index) {
+            const video = YOUTUBE_VIDEOS[index];
+            const card = document.createElement("div");
+            card.className = "yt-card";
+            const thumbContent = video.thumb ? `<img src="${video.thumb}" alt="">` : "▶";
+            card.innerHTML = `
+                ${video.starred ? '<span class="yt-star">★</span>' : ""}
+                <div class="yt-thumb" data-index="${index}">${thumbContent}</div>
+                <div class="yt-meta">
+                    <div class="title" data-index="${index}">${escapeHtml(video.title)}</div>
+                    <div class="byline"><a href="#" data-channel="${escapeHtml(video.user)}">${escapeHtml(video.user)}</a> · ${escapeHtml(video.views)}</div>
+                </div>`;
+            card.querySelector(".yt-thumb").addEventListener("click", e => { e.stopPropagation(); onVideoClick(index); });
+            card.querySelector(".title").addEventListener("click", e => { e.stopPropagation(); onVideoClick(index); });
+            card.querySelector(".byline a").addEventListener("click", e => {
+                e.preventDefault();
+                e.stopPropagation();
+                showChannels(video.user);
+            });
+            ytGrid.appendChild(card);
+        }
+
+        function showCategories() {
+            closeWatch();
+            setNav("categories");
+            ytGrid.hidden = true;
+            ytLinkList.hidden = false;
+            const cats = ["Chambers", "Retro Tech", "Private", "Memes"];
+            ytLinkList.innerHTML = cats.map(c =>
+                `<a href="#" data-cat="${escapeHtml(c)}">${escapeHtml(c)}</a>`
+            ).join("");
+            ytLinkList.querySelectorAll("a").forEach(a => {
+                a.addEventListener("click", e => {
+                    e.preventDefault();
+                    goHome();
+                    document.getElementById("yt-banner").innerHTML =
+                        `<strong>Category:</strong> ${escapeHtml(a.dataset.cat)} — showing all videos.`;
+                    renderGrid();
+                });
+            });
+        }
+
+        function showCommunity() {
+            closeWatch();
+            setNav("community");
+            ytGrid.hidden = true;
+            ytLinkList.hidden = false;
+            ytLinkList.innerHTML = `
+                <a href="#" data-community="forums">Forums</a>
+                <a href="#" data-community="groups">Groups</a>
+                <a href="#" data-community="history">Viewing History</a>
+                <a href="#" data-community="home">Back to Videos</a>`;
+            ytLinkList.querySelectorAll("a").forEach(a => {
+                a.addEventListener("click", e => {
+                    e.preventDefault();
+                    if (a.dataset.community === "home") goHome();
+                    else {
+                        document.getElementById("yt-banner").innerHTML =
+                            `<strong>Community » ${escapeHtml(a.textContent)}</strong> — feature coming soon. <a href="#" id="comm-back">Return to Videos</a>`;
+                        document.getElementById("comm-back").addEventListener("click", ev => { ev.preventDefault(); goHome(); renderGrid(); });
+                    }
+                });
+            });
+        }
+
+        function closeWatch() {
+            ytWatch.classList.remove("open");
+            ytHome.classList.remove("hidden");
+            ytPlayer.innerHTML = "";
+        }
+
+        function unlockChamber() {
+            if (chamberUnlocked) return;
+            chamberUnlocked = true;
+            navBtn.classList.add("active");
+            document.getElementById("yt-banner").innerHTML =
+                "<strong>Broadcast unlocked.</strong> The sixth chamber awaits — press Next.";
+            // Show final image in the player without scaling (native size, centered)
+            try {
+                ytHome.classList.add("hidden");
+                ytWatch.classList.add("open");
+                // create a top-level overlay so the final image isn't clipped or zoomed by the scene transform
+                const existing = document.querySelector('.final-overlay');
+                if (existing) existing.remove();
+                const overlay = document.createElement('div');
+                overlay.className = 'final-overlay';
+                // Calculate scale to fit 1920x1080 into viewport
+                const scale = Math.max(window.innerWidth / 1920, window.innerHeight / 1080);
+                overlay.style.transform = `translate(-50%, -50%) scale(${scale})`;
+                overlay.innerHTML = `<div class="final-screen"><img src="images/EVEN BETTR.avif" alt="Final image"></div>`;
+                overlay.addEventListener('click', () => { overlay.remove(); });
+                document.body.appendChild(overlay);
+                const watchTitle = document.getElementById("watch-title");
+                const watchInfo = document.getElementById("watch-info");
+                if (watchTitle) watchTitle.textContent = "Broadcast Unlocked";
+                if (watchInfo) watchInfo.textContent = "Press Next to continue.";
+            } catch (e) {
+                console.error('unlockChamber display error', e);
+            }
+        }
+
+        function escapeHtml(str) {
+            return String(str).replace(/[&<>"']/g, c => ({
+                "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
+            }[c]));
+        }
+
+        document.getElementById("yt-back").addEventListener("click", closeWatch);
+        document.getElementById("yt-logo").addEventListener("click", e => {
+            e.preventDefault();
+            goHome();
+            renderGrid();
+        });
+        ytNav.querySelectorAll("a").forEach(a => {
+            a.addEventListener("click", e => {
+                e.preventDefault();
+                if (a.dataset.nav === "home") { goHome(); renderGrid(); }
+                else if (a.dataset.nav === "categories") showCategories();
+                else if (a.dataset.nav === "channels") showChannels();
+                else if (a.dataset.nav === "community") showCommunity();
+            });
+        });
+        ytSearchBtn.addEventListener("click", () => {
+            const q = ytSearchInput.value.trim().toLowerCase();
+            if (q === "chamber5") {
+                ytProgress.textContent = "Hint: ★ row — 2nd clip, then 1st, then 3rd.";
+            } else if (q) {
+                goHome();
+                ytGrid.hidden = false;
+                ytLinkList.hidden = true;
+                const matches = YOUTUBE_VIDEOS.map((v, i) => ({ v, i })).filter(({ v }) =>
+                    v.title.toLowerCase().includes(q) || v.user.toLowerCase().includes(q)
+                );
+                ytGrid.innerHTML = "";
+                if (matches.length) {
+                    matches.forEach(({ i }) => appendVideoCard(i));
+                    document.getElementById("yt-banner").innerHTML =
+                        `<strong>Search:</strong> "${escapeHtml(ytSearchInput.value)}" — ${matches.length} result(s). <a href="#" id="search-clear">clear</a>`;
+                    document.getElementById("search-clear").addEventListener("click", ev => { ev.preventDefault(); goHome(); renderGrid(); });
+                } else {
+                    document.getElementById("yt-banner").innerHTML =
+                        `<strong>Search:</strong> no results. <a href="#" id="search-clear">show all</a>`;
+                    document.getElementById("search-clear").addEventListener("click", ev => { ev.preventDefault(); goHome(); renderGrid(); });
+                }
+            }
+        });
+        ytSearchInput.addEventListener("keydown", e => {
+            if (e.key === "Enter") ytSearchBtn.click();
+        });
+
+        renderGrid();
+        initSequence();  // initialize randomized required order and lights
+
+        const whispers = [
+            "Click the highlighted video to continue the sequence.",
+            "Watch all 6 ★ videos in the correct order to unlock the next chamber."
+        ];
+        let wIndex = 0;
+        const wEl = document.createElement("div");
+        wEl.id = "whisper-text";
+        wEl.innerText = whispers[0];
+        document.body.appendChild(wEl);
+        setInterval(() => {
+            wEl.style.opacity = 0;
+            setTimeout(() => {
+                wIndex = (wIndex + 1) % whispers.length;
+                wEl.innerText = whispers[wIndex];
+                wEl.style.opacity = 1;
+            }, 1500);
+        }, 6000);
+
+        // Developer bypass
+        let devBypass = "";
+        window.addEventListener('keydown', (e) => {
+            devBypass += e.key;
+            if (devBypass.endsWith('OPENSEASAME')) {
+                navBtn.classList.add('active');
+            }
+        });
+    </script>
+</body>
+
+</html>

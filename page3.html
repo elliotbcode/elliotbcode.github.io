@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <title>Tablet III - The Operator's Terminal</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
+    <style>
+        html,
+        body {
+            cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><path d="M 4 2 L 4 22 L 9 17 L 13 24 L 16 23 L 12 16 L 19 16 Z" fill="black" stroke="white" stroke-width="1.5" stroke-linejoin="round"/></svg>') 4 2, auto;
+            height: 100%;
+            margin: 0;
+            overflow: hidden;
+            user-select: none;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #111;
+            height: 100%;
+            overflow: hidden;
+        }
+
+        /* Centered aspect-ratio container that covers the entire viewport */
+        #scene {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 100vw;
+            height: calc(100vw * 683 / 1024);
+            min-height: 100vh;
+            min-width: calc(100vh * 1024 / 683);
+            background-image: url('images/old computer yes.jpeg');
+            background-size: 120% 120%; /* Zoomed in 1.2x */
+            background-position: center;
+            overflow: hidden;
+            z-index: 1;
+            container-type: size; /* Enables cqw/cqh unit support */
+            --crt-line: calc(1.35cqw * 1.15);
+            --crt-scanline-up: calc(10 * var(--crt-line));
+        }
+
+        /* Cinematic Vignette over scene */
+        #scene::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            box-shadow: inset 0 0 250px rgba(0,0,0,0.98), inset 0 0 100px rgba(0,0,0,0.8);
+            pointer-events: none;
+            z-index: 10;
+        }
+
+        .container {
+            display: none;
+        }
+
+        /* The Retro Terminal, positioned relative to #scene (re-calculated for 1.2x zoom) */
+        #terminal {
+            position: absolute;
+            top: 23.87%;
+            left: 14.71%;
+            width: 29.29%;
+            height: 33.34%;
+            padding: 0.8% 1.2%;
+            box-sizing: border-box;
+            font-family: 'VT323', 'Courier New', monospace;
+            font-size: 1.35cqw;
+            font-weight: 400;
+            letter-spacing: 0.08em;
+            line-height: 1.15;
+            text-transform: uppercase;
+            color: #42b842;
+            background: transparent;
+            border: none;
+            border-radius: 4% / 6%;
+            overflow: hidden;
+            z-index: 50;
+            display: flex;
+            flex-direction: column;
+            cursor: text;
+            -webkit-user-select: text;
+            user-select: text;
+            -webkit-font-smoothing: none;
+            -moz-osx-font-smoothing: grayscale;
+            text-shadow:
+                1px 0 rgba(160, 50, 50, 0.22),
+                -1px 0 rgba(50, 70, 160, 0.2),
+                0 0 1px rgba(50, 170, 50, 1),
+                0 0 6px rgba(40, 130, 40, 0.65),
+                0 0 14px rgba(25, 80, 25, 0.4);
+            filter: contrast(1.2) brightness(0.82) saturate(0.7);
+            animation: crt-hum 0.14s steps(2) infinite;
+        }
+
+        @keyframes crt-hum {
+            0% { filter: contrast(1.18) brightness(0.8) saturate(0.68); }
+            50% { filter: contrast(1.22) brightness(0.84) saturate(0.72); }
+            100% { filter: contrast(1.19) brightness(0.81) saturate(0.69); }
+        }
+
+        /* Scanlines extend 10 lines above the terminal and fade out at the top */
+        #crt-scanlines {
+            position: absolute;
+            left: 14.71%;
+            width: 29.29%;
+            top: calc(23.87% - var(--crt-scanline-up));
+            height: calc(33.34% + var(--crt-scanline-up));
+            border-radius: 4% / 6%;
+            background: repeating-linear-gradient(
+                0deg,
+                rgba(0, 0, 0, 0.22) 0px,
+                rgba(0, 0, 0, 0.22) 1px,
+                transparent 1px,
+                transparent 3px
+            );
+            pointer-events: none;
+            z-index: 55;
+            mix-blend-mode: multiply;
+            -webkit-mask-image: linear-gradient(
+                to bottom,
+                transparent 0px,
+                rgba(0, 0, 0, 0.08) calc(var(--crt-scanline-up) * 0.2),
+                rgba(0, 0, 0, 0.35) calc(var(--crt-scanline-up) * 0.5),
+                rgba(0, 0, 0, 0.72) calc(var(--crt-scanline-up) * 0.82),
+                black var(--crt-scanline-up),
+                black 100%
+            );
+            mask-image: linear-gradient(
+                to bottom,
+                transparent 0px,
+                rgba(0, 0, 0, 0.08) calc(var(--crt-scanline-up) * 0.2),
+                rgba(0, 0, 0, 0.35) calc(var(--crt-scanline-up) * 0.5),
+                rgba(0, 0, 0, 0.72) calc(var(--crt-scanline-up) * 0.82),
+                black var(--crt-scanline-up),
+                black 100%
+            );
+        }
+
+        #terminal::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: inherit;
+            background:
+                radial-gradient(ellipse at center, transparent 42%, rgba(0, 0, 0, 0.55) 100%),
+                url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.08'/%3E%3C/svg%3E");
+            opacity: 0.45;
+            pointer-events: none;
+            z-index: 3;
+            box-shadow: inset 0 0 22px rgba(0, 0, 0, 0.85);
+        }
+
+        #terminal-history,
+        #terminal-input-line,
+        #terminal-prompt,
+        #terminal-input {
+            position: relative;
+            z-index: 1;
+        }
+
+        #terminal-history {
+            flex-grow: 1;
+            overflow-y: auto;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            margin-bottom: 2px;
+            scrollbar-width: none;
+        }
+
+        #terminal-history::-webkit-scrollbar {
+            display: none;
+        }
+
+        #terminal-input-line {
+            display: flex;
+            align-items: center;
+        }
+
+        #terminal-input-line.booting {
+            visibility: hidden;
+        }
+
+        #terminal-prompt {
+            white-space: nowrap;
+            margin-right: 4px;
+        }
+
+        #terminal-input {
+            flex-grow: 1;
+            outline: none;
+            border: none;
+            background: transparent;
+            color: inherit;
+            font-family: inherit;
+            font-size: inherit;
+            letter-spacing: inherit;
+            text-transform: inherit;
+            caret-color: #42b842;
+            caret-shape: block;
+            white-space: pre;
+            word-break: break-all;
+        }
+
+        @supports not (caret-shape: block) {
+            #terminal-input:focus {
+                outline: 1px solid rgba(61, 204, 61, 0.35);
+                outline-offset: 1px;
+            }
+        }
+
+        /* Next Button (Fixed to screen viewport, not scene) */
+        .nav-btn {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            padding: 15px 30px;
+            background-color: rgba(20, 20, 20, 0.7);
+            color: rgba(255, 180, 120, 0.8);
+            text-decoration: none;
+            font-family: 'Papyrus', cursive;
+            font-weight: bold;
+            font-size: 28px;
+            border: 2px solid rgba(0, 0, 0, 0.8);
+            border-top-color: rgba(255, 180, 120, 0.4);
+            border-left-color: rgba(255, 180, 120, 0.4);
+            border-radius: 12px;
+            transition: all 0.3s ease;
+            box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.8);
+            z-index: 100;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.9);
+            display: none;
+        }
+
+        .nav-btn.active {
+            display: block;
+            animation: pulseGlow 1.5s infinite;
+        }
+
+        @keyframes pulseGlow {
+            0% { box-shadow: 0 0 10px rgba(255, 180, 120, 0.6), 4px 4px 10px rgba(0,0,0,0.8); border-color: rgba(255, 180, 120, 0.6); }
+            50% { box-shadow: 0 0 30px rgba(255, 200, 150, 1), 4px 4px 15px rgba(0,0,0,0.9); border-color: rgba(255, 200, 150, 1); }
+            100% { box-shadow: 0 0 10px rgba(255, 180, 120, 0.6), 4px 4px 10px rgba(0,0,0,0.8); border-color: rgba(255, 180, 120, 0.6); }
+        }
+
+        .nav-btn:hover {
+            background-color: rgba(40, 30, 20, 0.9);
+            color: rgba(255, 220, 180, 1);
+            transform: scale(1.05);
+            box-shadow: 0 0 40px rgba(255, 200, 150, 1);
+        }
+
+        #whisper-text {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: rgba(255, 255, 255, 0.8);
+            font-family: 'Papyrus', cursive;
+            font-size: 34px;
+            text-align: center;
+            z-index: 90;
+            pointer-events: none;
+            text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.9), -1px -1px 2px rgba(0, 0, 0, 0.8);
+            transition: opacity 1.5s ease-in-out;
+            opacity: 1;
+            width: 80%;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="scene">
+        <div id="crt-scanlines" aria-hidden="true"></div>
+        <div id="terminal" onclick="focusInput()">
+            <div id="terminal-history"></div>
+            <div id="terminal-input-line" class="booting">
+                <span id="terminal-prompt">A:\&gt;</span>
+                <span id="terminal-input" contenteditable="true" spellcheck="false" onkeydown="handleInput(event)"></span>
+            </div>
+        </div>
+    </div>
+
+    <a href="page4.html" class="nav-btn">Next ➔</a>
+
+    <!-- ===== RETRO CONSOLE GAME LOGIC ===== -->
+    <script>
+        const historyEl = document.getElementById('terminal-history');
+        const inputEl = document.getElementById('terminal-input');
+        const inputLineEl = document.getElementById('terminal-input-line');
+        const navBtn = document.querySelector('.nav-btn');
+
+        const BOOT_TEXT = `ROM BASIC 1985
+640K RAM SYSTEM
+
+DISK BOOT FAILURE
+INSERT SYSTEM DISK IN DRIVE A:
+
+CHOOSE AN OPTION:
+1. ATTEMPT SYSTEM REBOOT
+2. READ SYSTEM MANUAL
+3. RUN REPAIR TOOL
+4. TOGGLE WRITE MODE [OFF]`;
+
+        let isSuccess = false;
+        let writeMode = false;
+        let isTyping = false;
+        let bootComplete = false;
+        const commandQueue = [];
+        let drainingQueue = false;
+        const promptText = "A:\\>";
+        const CHAR_DELAY_MS = 24;
+
+        function delay(ms) {
+            return new Promise(resolve => setTimeout(resolve, ms));
+        }
+
+        async function typeOn(text, charDelay = CHAR_DELAY_MS) {
+            isTyping = true;
+            inputEl.contentEditable = "false";
+            for (const ch of text) {
+                historyEl.textContent += ch;
+                scrollHistory();
+                await delay(charDelay);
+            }
+            isTyping = false;
+        }
+
+        function menuText() {
+            return `\n\nCHOOSE AN OPTION:\n1. ATTEMPT SYSTEM REBOOT\n2. READ SYSTEM MANUAL\n3. RUN REPAIR TOOL\n4. TOGGLE WRITE MODE [${writeMode ? 'ON' : 'OFF'}]`;
+        }
+
+        function focusInput() {
+            if (!isSuccess && bootComplete && !isTyping) {
+                inputEl.focus();
+            }
+        }
+
+        async function bootSequence() {
+            historyEl.textContent = "";
+            await typeOn(BOOT_TEXT);
+            inputLineEl.classList.remove("booting");
+            bootComplete = true;
+            inputEl.contentEditable = "true";
+            focusInput();
+        }
+
+        bootSequence();
+
+        function handleInput(e) {
+            if (!bootComplete || isSuccess) return;
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                const cmd = inputEl.innerText;
+                inputEl.innerText = "";
+                commandQueue.push(cmd);
+                drainCommandQueue();
+            }
+        }
+
+        async function drainCommandQueue() {
+            if (drainingQueue) return;
+            drainingQueue = true;
+            while (commandQueue.length > 0) {
+                await processCommand(commandQueue.shift());
+            }
+            drainingQueue = false;
+            if (!isSuccess) {
+                inputEl.contentEditable = "true";
+                focusInput();
+            }
+        }
+
+        async function processCommand(cmd) {
+            const rawCmd = cmd.trim();
+
+            await typeOn(`\n${promptText} ${rawCmd}`);
+
+            if (rawCmd === "") {
+                return;
+            }
+
+            if (rawCmd === '1') {
+                await typeOn(`\nBooting... \nError 0x44: Disk read failure.\nReboot failed.`);
+                await typeOn(menuText());
+            } else if (rawCmd === '2') {
+                const manual = writeMode
+                    ? `\nSYSTEM MANUAL:\n- DISK WRITE MODE: ON\n- Repair tool is unlocked.\n- Run Option 3 (REPAIR TOOL) now.`
+                    : `\nSYSTEM MANUAL:\n- DISK WRITE MODE: OFF\n- Select Option 4 to enable write access.\n- Then run Option 3 (REPAIR TOOL).`;
+                await typeOn(manual);
+                await typeOn(menuText());
+            } else if (rawCmd === '3') {
+                if (!writeMode) {
+                    await typeOn(`\nStarting REPAIR.EXE...\nERROR: Floppy disk is write-protected!\nEnable WRITE MODE (Option 4) first.`);
+                    await typeOn(menuText());
+                } else {
+                    await runDiagnostics();
+                }
+            } else if (rawCmd === '4') {
+                writeMode = !writeMode;
+                await typeOn(`\nDisk write mode is now: ${writeMode ? 'ENABLED (ON)' : 'DISABLED (OFF)'}`);
+                await typeOn(menuText());
+            } else if (rawCmd.toLowerCase() === 'help') {
+                await typeOn(`\nEnter a number (1-4) corresponding to the menu option.`);
+                await typeOn(menuText());
+            } else {
+                await typeOn(`\nInvalid option: "${rawCmd}". Please choose 1, 2, 3, or 4.`);
+                await typeOn(menuText());
+            }
+        }
+
+        async function runDiagnostics() {
+            isSuccess = true;
+            inputEl.contentEditable = "false";
+            inputLineEl.style.display = 'none';
+
+            const steps = [
+                "\nStarting REPAIR.EXE...",
+                "\nAccessing sector diagnostics...",
+                "\nScanning memory allocation blocks:",
+                "\n  Block 0x0A [SYS]: OK",
+                "\n  Block 0x1F [MEM]: LEAK DETECTED (AUTO-PATCHING...)",
+                "\n  Block 0x1F [MEM]: RESOLVED",
+                "\n  Block 0x3C [LOG]: OK",
+                "\nSystem parity checking... Done.",
+                "\nCore stabilized! Status: ONLINE.",
+                "\n>> REBOOT SUCCESSFUL. LOCK OPEN."
+            ];
+
+            for (const step of steps) {
+                await delay(350);
+                await typeOn(step, 18);
+            }
+
+            finishChamber();
+        }
+
+        function finishChamber() {
+            navBtn.classList.add('active');
+            const wEl = document.getElementById('whisper-text');
+            if (wEl) {
+                wEl.style.opacity = 0;
+                setTimeout(() => {
+                    wEl.innerText = "System repaired. Entering the fourth chamber...";
+                    wEl.style.opacity = 1;
+                }, 500);
+            }
+            setTimeout(() => {
+                window.location.href = 'page4.html';
+            }, 2200);
+        }
+
+        function scrollHistory() {
+            historyEl.scrollTop = historyEl.scrollHeight;
+        }
+
+        window.addEventListener('keydown', (e) => {
+            // Developer bypass
+            if (!window.bypassCode) window.bypassCode = "";
+            window.bypassCode += e.key;
+            if (window.bypassCode.endsWith('OPENSEASAME')) {
+                navBtn.classList.add('active');
+            }
+        });
+    </script>
+
+    <script>
+        const whispers = [
+            "Follow the menu: enable Write Mode first, then run the Repair Tool.",
+            "Use Options 2, 4, and 3 in sequence to repair the system."
+        ];
+        let wIndex = 0;
+        const wEl = document.createElement('div');
+        wEl.id = 'whisper-text';
+        wEl.innerText = whispers[0];
+        document.body.appendChild(wEl);
+
+        setInterval(() => {
+            wEl.style.opacity = 0;
+            setTimeout(() => {
+                wIndex = (wIndex + 1) % whispers.length;
+                wEl.innerText = whispers[wIndex];
+                wEl.style.opacity = 1;
+            }, 1500);
+        }, 6000);
+    </script>
+</body>
+
+</html>

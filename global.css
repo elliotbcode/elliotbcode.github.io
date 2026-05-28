@@ -1,0 +1,146 @@
+/* global.css - Sepia (weathered) theme and UI utilities */
+
+/* Reset and base font */
+/* Global Styles for Computing Evolution Project */
+
+/* Reset and base typography */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html, body {
+  height: 100%;
+  font-family: 'Outfit', sans-serif;
+  background-color: #f4ecd8; /* warm parchment base */
+  color: #332b1e;
+}
+
+/* Sepia, weathered look for all background containers */
+.bg-fill-cut {
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  overflow: hidden;
+  filter: sepia(0.3) contrast(1.1) saturate(0.9);
+}
+
+/* Hint text styling – larger, semi‑transparent background */
+.hint-text {
+  position: fixed;
+  bottom: 30px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(255, 248, 230, 0.85);
+  padding: 8px 12px;
+  border-radius: 8px;
+  font-size: 28px;
+  font-family: 'Papyrus', cursive;
+  color: #5a3d1b;
+  text-shadow: 1px 1px 3px rgba(0,0,0,0.5);
+  z-index: 90;
+  pointer-events: none;
+  text-align: center;
+  width: 80%;
+}
+
+/* Final overlay for page6 (already styled inline, but ensure consistency) */
+.final-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.95);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+}
+
+.final-message {
+  color: #fff;
+  font-family: 'Outfit', sans-serif;
+  font-size: 32px;
+  text-align: center;
+  margin-top: 20px;
+}
+
+/* Ensure navigation button retains old‑timey look */
+.nav-btn {
+  font-family: 'Papyrus', cursive;
+  background: rgba(20,20,20,0.7);
+  color: rgba(255,180,120,0.8);
+  border: 2px solid rgba(0,0,0,0.8);
+  border-radius: 12px;
+  font-size: 28px;
+  padding: 15px 30px;
+}
+
+/* Ring pulse animation for YouTube next video */
+@keyframes ringPulse {
+  0%, 100% { filter: drop-shadow(0 0 0 rgba(255,170,0,0.6)); }
+  50% { filter: drop-shadow(0 0 6px rgba(255,170,0,0.3)); }
+}
+
+.yt-card.next-to-click .yt-thumb {
+  outline: 3px solid #ffaa00;
+  box-shadow: 0 0 0 8px rgba(255,170,0,0.3), 0 0 0 15px rgba(255,170,0,0.15);
+  animation: ringPulse 1.5s infinite;
+}
+
+html, body {
+  height: 100%;
+  font-family: 'Outfit', sans-serif;
+  background-color: #f4e9d8; /* warm parchment */
+  color: #5b4636; /* dark sepia text */
+  overflow: hidden;
+}
+
+/* Fill‑and‑cut background behavior */
+.bg-fill-cut {
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  overflow: hidden;
+}
+
+/* Hint / whisper styling – large, semi‑transparent background */
+.hint-text {
+  position: fixed;
+  bottom: 30px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(255, 255, 255, 0.85);
+  color: #5b4636;
+  font-family: 'Papyrus', cursive;
+  font-size: 28px;
+  padding: 8px 16px;
+  border-radius: 8px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.4);
+  text-align: center;
+  max-width: 80%;
+  z-index: 90;
+}
+
+/* Final overlay – dark screen with message */
+.final-overlay {
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.95);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  z-index: 9999;
+}
+
+.final-message {
+  color: #fff;
+  font-family: 'Papyrus', cursive;
+  font-size: 32px;
+  text-align: center;
+  margin-top: 20px;
+}

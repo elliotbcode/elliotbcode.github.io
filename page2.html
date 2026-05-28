@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tablet II - The Typist's Table</title>
+    <style>
+        html,
+        body {
+            height: 100%;
+            margin: 0;
+            overflow: hidden;
+            user-select: none;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            min-height: 100vh;
+            padding: 20px;
+            background-image: url('images/table.png');
+            background-repeat: no-repeat;
+            background-position: center center;
+            background-size: cover;
+            background-attachment: scroll;
+            background-color: #1a1a1a;
+            position: relative;
+        }
+
+        /* Cinematic Vignette */
+        body::after {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            box-shadow: inset 0 0 200px rgba(0,0,0,0.95), inset 0 0 80px rgba(0,0,0,0.8);
+            pointer-events: none;
+            z-index: 80;
+        }
+
+        /* Darken Screen Overlay (for reset) */
+        #darken-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #000;
+            opacity: 0;
+            transition: opacity 1s ease;
+            z-index: 200;
+            pointer-events: none;
+        }
+
+        #darken-overlay.active {
+            opacity: 1;
+        }
+
+        /* Modal Popup for Jammed Key */
+        #jam-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.85);
+            z-index: 300;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(8px);
+            animation: fadeIn 0.4s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: scale(0.95); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        .modal-content {
+            background-color: rgba(30, 25, 20, 0.95);
+            border: 2px solid rgba(255, 180, 120, 0.5);
+            padding: 40px 60px;
+            border-radius: 16px;
+            text-align: center;
+            max-width: 500px;
+            box-shadow: 0 0 40px rgba(0,0,0,0.9), 0 0 20px rgba(255,180,120,0.2);
+            font-family: 'Papyrus', cursive;
+            color: #f4edd0;
+        }
+
+        .modal-content h2 {
+            font-size: 36px;
+            margin-top: 0;
+            color: #ffb478;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.9);
+            letter-spacing: 2px;
+        }
+
+        .modal-content p {
+            font-size: 22px;
+            line-height: 1.6;
+            color: #ddd;
+            margin-bottom: 35px;
+            font-family: Arial, sans-serif;
+        }
+
+        #retry-btn {
+            background-color: rgba(20, 20, 20, 0.9);
+            color: #ffb478;
+            border: 2px solid #ffb478;
+            padding: 16px 36px;
+            font-size: 24px;
+            font-family: 'Papyrus', cursive;
+            font-weight: bold;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.8);
+        }
+
+        #retry-btn:hover {
+            background-color: #ffb478;
+            color: #1a1a1a;
+            box-shadow: 0 0 25px #ffb478;
+            transform: scale(1.05);
+        }
+
+        /* Typewriter & Paper Scene */
+        #typewriter-scene {
+            position: absolute;
+            bottom: -300px; /* Move down significantly */
+            left: 50%;
+            transform: translateX(-50%);
+            width: 1100px;
+            z-index: 20;
+            display: flex;
+            justify-content: center;
+        }
+
+        /* Paper Sheet positioned IN FRONT of typewriter so it is 100% visible */
+        #paper-sheet {
+            position: absolute;
+            top: 10%; /* Adjust slightly up */
+            left: 50%;
+            transform: translateX(-50%);
+            width: 600px; /* Wider to accommodate larger text */
+            height: 450px; /* Taller */
+            background-color: transparent;
+            z-index: 30; /* Higher z-index than typewriter image */
+            padding: 10px;
+            box-sizing: border-box;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+        }
+
+        #target-text {
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 28px; /* Slightly smaller to prevent overflow */
+            font-weight: bold;
+            color: rgba(60, 45, 30, 0.4); /* Faded Moore's Law */
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            right: 20px;
+            text-align: left;
+            line-height: 1.5;
+            letter-spacing: 1px;
+            pointer-events: none;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+
+        #typed-text {
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 28px; /* Slightly smaller to prevent overflow */
+            font-weight: bold;
+            color: #1a110b; /* Crisp dark ink */
+            position: absolute;
+            top: 220px; /* Further offset to fit larger text above */
+            left: 20px;
+            right: 20px;
+            text-align: left;
+            line-height: 1.5;
+            letter-spacing: 1px;
+            text-shadow: 0 0 1px rgba(0,0,0,0.5);
+            z-index: 35;
+            pointer-events: none;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+
+        #typewriter-img {
+            width: 100%;
+            max-width: 1100px;
+            height: auto;
+            z-index: 25;
+            filter: drop-shadow(0 20px 35px rgba(0,0,0,0.95));
+            transition: transform 0.08s ease;
+        }
+
+        .container {
+            display: none;
+        }
+
+        /* Next Button */
+        .nav-btn {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            padding: 15px 30px;
+            background-color: rgba(20, 20, 20, 0.7);
+            color: rgba(255, 180, 120, 0.8);
+            text-decoration: none;
+            font-family: 'Papyrus', cursive;
+            font-weight: bold;
+            font-size: 28px;
+            border: 2px solid rgba(0, 0, 0, 0.8);
+            border-top-color: rgba(255, 180, 120, 0.4);
+            border-left-color: rgba(255, 180, 120, 0.4);
+            border-radius: 12px;
+            transition: all 0.3s ease;
+            box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.8);
+            z-index: 100;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.9);
+            display: none;
+        }
+
+        .nav-btn.active {
+            display: block;
+            animation: pulseGlow 1.5s infinite;
+        }
+
+        @keyframes pulseGlow {
+            0% { box-shadow: 0 0 10px rgba(255, 180, 120, 0.6), 4px 4px 10px rgba(0,0,0,0.8); border-color: rgba(255, 180, 120, 0.6); }
+            50% { box-shadow: 0 0 30px rgba(255, 200, 150, 1), 4px 4px 15px rgba(0,0,0,0.9); border-color: rgba(255, 200, 150, 1); }
+            100% { box-shadow: 0 0 10px rgba(255, 180, 120, 0.6), 4px 4px 10px rgba(0,0,0,0.8); border-color: rgba(255, 180, 120, 0.6); }
+        }
+
+        .nav-btn:hover {
+            background-color: rgba(40, 30, 20, 0.9);
+            color: rgba(255, 220, 180, 1);
+            transform: scale(1.05);
+            box-shadow: 0 0 40px rgba(255, 200, 150, 1);
+        }
+
+        #whisper-text {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: rgba(255, 255, 255, 0.9);
+            font-family: 'Papyrus', cursive;
+            font-size: 34px;
+            text-align: center;
+            z-index: 90;
+            pointer-events: none;
+            text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.9), -1px -1px 2px rgba(0, 0, 0, 0.8);
+            transition: opacity 1.5s ease-in-out;
+            opacity: 1;
+            width: 80%;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="darken-overlay"></div>
+
+    <div id="jam-modal">
+        <div class="modal-content">
+            <h2>You Misstyped!</h2>
+            <p>You appear to have slipped up. You'll have to start over.</p>
+            <button id="retry-btn">Return Carriage</button>
+        </div>
+    </div>
+
+    <div id="typewriter-scene">
+        <div id="paper-sheet">
+            <div id="target-text">THE NUMBER OF TRANSISTORS ON A MICROCHIP DOUBLES EVERY TWO YEARS</div>
+            <div id="typed-text"></div>
+        </div>
+        <img src="images/typewriter-removebg-preview.png" id="typewriter-img" alt="Typewriter">
+    </div>
+
+    <div class="container">
+        <h1>Tablet II</h1>
+        <p>This is page2.html.</p>
+    </div>
+    <a href="page3.html" class="nav-btn">Next ➔</a>
+
+    <script>
+        const typewriterImg = document.getElementById('typewriter-img');
+        const typedTextEl = document.getElementById('typed-text');
+        const navBtn = document.querySelector('.nav-btn');
+        const jamModal = document.getElementById('jam-modal');
+        const retryBtn = document.getElementById('retry-btn');
+        const darkenOverlay = document.getElementById('darken-overlay');
+
+        const targetStr = "THE NUMBER OF TRANSISTORS ON A MICROCHIP DOUBLES EVERY TWO YEARS";
+        let typedStr = "";
+        let hasRiggedMistake = false;
+        let isLocked = false;
+
+        function processKey(char) {
+            if (isLocked || typedStr.length >= targetStr.length) return;
+
+            // Animate typewriter key press bounce
+            typewriterImg.style.transform = 'translateY(6px) scale(0.995)';
+            setTimeout(() => {
+                typewriterImg.style.transform = 'translateY(0px) scale(1)';
+            }, 80);
+
+            // 1. Rigged Mistake Check (happens on the 9th keystroke, e.g. after "THE NUMB")
+            if (!hasRiggedMistake && typedStr.length === 8) {
+                isLocked = true;
+                // Force a wrong character
+                typedStr += "X";
+                typedTextEl.innerText = typedStr;
+
+                // Animate mechanical jam shake
+                typewriterImg.style.transform = 'translateY(10px) translateX(15px) rotate(3deg)';
+
+                setTimeout(() => {
+                    jamModal.style.display = 'flex';
+                }, 500);
+                return;
+            }
+
+            // 2. Normal Typing (accepts whatever you type, even gobbledygook!)
+            typedStr += char;
+            typedTextEl.innerText = typedStr;
+
+            // 3. Immediate Mistake Check
+            if (typedStr[typedStr.length - 1] !== targetStr[typedStr.length - 1]) {
+                isLocked = true;
+                // Mistake made! Screen darkens for a second and resets immediately
+                setTimeout(() => {
+                    darkenOverlay.classList.add('active');
+                    setTimeout(() => {
+                        typedStr = "";
+                        typedTextEl.innerText = "";
+                        setTimeout(() => {
+                            darkenOverlay.classList.remove('active');
+                            isLocked = false;
+                        }, 1000);
+                    }, 1000);
+                }, 600);
+                return;
+            }
+
+            // 4. Success Check
+            if (typedStr.length === targetStr.length) {
+                isLocked = true;
+                // Success! Enable Next button
+                setTimeout(() => {
+                    navBtn.classList.add('active');
+                    const wEl = document.getElementById('whisper-text');
+                    if (wEl) {
+                        wEl.style.opacity = 0;
+                        setTimeout(() => {
+                            wEl.innerText = "Moore's Law is perfectly inscribed. The path is open.";
+                            wEl.style.opacity = 1;
+                        }, 500);
+                    }
+                }, 400);
+            }
+        }
+
+        // Allow clicking the typewriter image to type the next correct character
+        typewriterImg.addEventListener('click', () => {
+            if (isLocked || typedStr.length >= targetStr.length) return;
+            const nextChar = targetStr[typedStr.length];
+            processKey(nextChar);
+        });
+
+        // Allow physical keyboard typing
+        let bypassCode = "";
+        window.addEventListener('keydown', (e) => {
+            bypassCode += e.key;
+            if (bypassCode.endsWith('OPENSEASAME')) {
+                navBtn.classList.add('active');
+                return;
+            }
+            
+            if (isLocked || e.metaKey || e.ctrlKey || e.altKey) return;
+            // Backspace is disabled
+            if (e.key.length === 1 && e.key.match(/[a-zA-Z0-9 ]/)) {
+                processKey(e.key.toUpperCase());
+            }
+        });
+
+        // Modal Retry Button
+        retryBtn.addEventListener('click', () => {
+            jamModal.style.display = 'none';
+            typedStr = "";
+            typedTextEl.innerText = "";
+            hasRiggedMistake = true;
+            isLocked = false;
+            typewriterImg.style.transform = 'translateY(0px) translateX(0px) rotate(0deg)';
+        });
+    </script>
+
+    <script>
+        const whispers = [
+            "Type the phrase shown on the paper — match every letter exactly.",
+            "Click the typewriter or use your keyboard. Mistakes reset progress."
+        ];
+        let wIndex = 0;
+        const wEl = document.createElement('div');
+        wEl.id = 'whisper-text';
+        wEl.innerText = whispers[0];
+        document.body.appendChild(wEl);
+
+        setInterval(() => {
+            wEl.style.opacity = 0;
+            setTimeout(() => {
+                wIndex = (wIndex + 1) % whispers.length;
+                wEl.innerText = whispers[wIndex];
+                wEl.style.opacity = 1;
+            }, 1500);
+        }, 6000);
+    </script>
+</body>
+
+</html>
