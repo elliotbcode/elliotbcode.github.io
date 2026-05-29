@@ -26,12 +26,36 @@
                     position:absolute;
                     left:50%;
                     top:50%;
-                    transform:translate(-50%,-50%);
+                    /* nudge slightly left and reduce scale a touch to correct framing */
+                    transform:translate(calc(-50% - 1vw), -50%) scale(0.985);
                     width:1920px;
                     height:1080px;
                     object-fit:none;
                     display:block;
                 }
+                /* Static overlay that matches the image's native placement/size and doesn't resize */
+                .final-splash{
+                    position:absolute;
+                    left:50%;
+                    top:50%;
+                    transform:translate(calc(-50% - 1vw), -50%) scale(0.985);
+                    width:1920px;
+                    height:1080px;
+                    z-index:10001;
+                    pointer-events:none;
+                    display:flex;
+                    align-items:center;
+                    justify-content:center;
+                }
+                .final-splash .splash-backdrop{
+                    position:absolute;left:0;top:0;width:100%;height:100%;background:rgba(0,0,0,0.72);opacity:0;animation:splashFade 900ms ease 600ms forwards;
+                }
+                .final-splash .splash-text{
+                    position:relative;z-index:10002;color:#fff;font-family: Georgia, 'Times New Roman', serif;font-size:46px;text-align:center;opacity:0;transform:translateY(8px);animation:splashTextIn 900ms ease 1000ms forwards;text-shadow:0 8px 24px rgba(0,0,0,0.8)
+                }
+                .final-splash .splash-credit{display:block;margin-top:10px;font-size:16px;color:#ffd7b2}
+                @keyframes splashFade{to{opacity:1}}
+                @keyframes splashTextIn{to{opacity:1;transform:none}}
         .final-message{color:#fff;font-family: Georgia, 'Times New Roman', serif;font-size:32px;text-align:center;margin-top:20px;}
         .container{position:relative;z-index:1}
         #whisper-text{position:fixed;bottom:30px;left:50%;transform:translateX(-50%);color:#fff;font-family: Georgia, 'Times New Roman', serif;font-size:28px;text-align:center;z-index:900;pointer-events:none;text-shadow:0 1px 3px rgba(0,0,0,0.8);transition:opacity 2s ease-in-out;opacity:1;max-width:80%;background:rgba(0,0,0,0.6);padding:12px 18px;border-radius:12px;border:1px solid rgba(255,255,255,0.06);backdrop-filter:blur(4px);box-shadow:0 6px 18px rgba(0,0,0,0.6)}
@@ -79,6 +103,11 @@
     <div class="final-overlay" id="final-overlay">
         <img id="final-image" src="images/EVEN BETTR.avif" alt="Final image">
         <div class="final-message">Thanks for playing!<br/>You've completed the monument.</div>
+
+        <div class="final-splash" id="final-splash" aria-hidden="true">
+            <div class="splash-backdrop"></div>
+            <div class="splash-text">Thanks for playing<br/><span class="splash-credit">made by Elliot Broweleit</span></div>
+        </div>
     </div>
 
     <svg style="width:0;height:0;position:absolute;" aria-hidden="true">
