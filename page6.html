@@ -55,14 +55,17 @@
                     font-size:36px;
                     text-align:center;
                     line-height:1.25;
-                    width:1400px;
+                    /* reduce width ~8 characters per side to avoid overflowing the computer screen */
+                    width: calc(1400px - 16ch);
+                    max-width:1400px;
                     pointer-events:none;
                     text-shadow:0 6px 20px rgba(0,0,0,0.85);
                 }
                 .final-splash .splash-line{
                     opacity:0;
                     transform:translateY(18px);
-                    transition:opacity 700ms ease, transform 700ms ease;
+                    /* slightly slower fade in */
+                    transition:opacity 900ms ease, transform 900ms ease;
                     display:block;
                 }
                 .final-splash .splash-line.show{
@@ -178,8 +181,8 @@
             const splash = document.getElementById('final-splash');
             if(!splash) return;
             const lines = Array.from(splash.querySelectorAll('.splash-line'));
-            const baseDelay = 700;
-            const gap = 1600;
+            const baseDelay = 900;
+            const gap = 2000;
             lines.forEach((el,i) => {
                 setTimeout(() => {
                     el.classList.add('show');
