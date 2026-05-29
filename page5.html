@@ -413,7 +413,7 @@
             background-color: rgba(20, 20, 20, 0.7);
             color: rgba(255, 180, 120, 0.8);
             text-decoration: none;
-            font-family: 'Papyrus', cursive;
+            font-family: Georgia, 'Times New Roman', serif;
             font-weight: bold;
             font-size: 28px;
             border: 2px solid rgba(0, 0, 0, 0.8);
@@ -437,14 +437,22 @@
             bottom: 30px;
             left: 50%;
             transform: translateX(-50%);
-            color: rgba(255, 255, 255, 0.85);
-            font-family: 'Papyrus', cursive;
-            font-size: 28px;
+            color: #fff;
+            font-family: Georgia, 'Times New Roman', serif;
+            font-size: 24px;
             text-align: center;
-            z-index: 90;
+            z-index: 900;
             pointer-events: none;
-            text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.9);
-            width: 80%;
+            text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8);
+            transition: opacity 2s ease-in-out;
+            opacity: 1;
+            max-width: 80%;
+            background: rgba(0,0,0,0.6);
+            padding: 12px 16px;
+            border-radius: 12px;
+            border: 1px solid rgba(255,255,255,0.06);
+            backdrop-filter: blur(4px);
+            box-shadow: 0 6px 18px rgba(0,0,0,0.6);
         }
 
 
@@ -890,22 +898,42 @@
         initSequence();  // initialize randomized required order and lights
 
         const whispers = [
-            "Click the highlighted video to continue the sequence.",
-            "Watch all 6 ★ videos in the correct order to unlock the next chamber."
+            "Click the highlighted (pulsing) video. Follow the order it shows.",
+            "Click each highlighted ★ video in sequence until all are done to unlock Next."
         ];
         let wIndex = 0;
-        const wEl = document.createElement("div");
-        wEl.id = "whisper-text";
+        const wEl = document.createElement('div');
+        wEl.id = 'whisper-text';
         wEl.innerText = whispers[0];
         document.body.appendChild(wEl);
+
         setInterval(() => {
             wEl.style.opacity = 0;
             setTimeout(() => {
                 wIndex = (wIndex + 1) % whispers.length;
                 wEl.innerText = whispers[wIndex];
                 wEl.style.opacity = 1;
-            }, 1500);
-        }, 6000);
+            }, 2000);
+        }, 9000);
+
+        // Fade-to-black for Next button
+        const navBtn = document.getElementById("nav-btn");
+        if (navBtn) {
+            navBtn.addEventListener('click', function (e) {
+                if (!navBtn.classList.contains('active')) return;
+                e.preventDefault();
+                const overlay = document.createElement('div');
+                overlay.style.position = 'fixed';
+                overlay.style.inset = '0';
+                overlay.style.background = '#000';
+                overlay.style.opacity = '0';
+                overlay.style.transition = 'opacity 0.9s ease';
+                overlay.style.zIndex = '99999';
+                document.body.appendChild(overlay);
+                requestAnimationFrame(() => overlay.style.opacity = '1');
+                setTimeout(() => window.location.href = navBtn.href, 900);
+            });
+        }
 
         // Developer bypass
         let devBypass = "";

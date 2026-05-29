@@ -10,9 +10,9 @@
         html,body{height:100%;margin:0;background:#000;color:#fff;-webkit-text-size-adjust:100%;text-size-adjust:100%}
         .final-screen{position:fixed;left:0;top:0;width:100%;height:100%;background:#000;z-index:10;display:flex;align-items:center;justify-content:center;flex-direction:column}
         .final-screen img{max-width:100%;max-height:80%;object-fit:contain;display:block}
-        .final-message{color:#fff;font-family:'Papyrus',cursive;font-size:32px;text-align:center;margin-top:20px;}
+        .final-message{color:#fff;font-family: Georgia, 'Times New Roman', serif;font-size:32px;text-align:center;margin-top:20px;}
         .container{position:relative;z-index:1}
-        #whisper-text{position:fixed;bottom:30px;left:50%;transform:translateX(-50%);color:rgba(255,255,255,0.85);font-family:'Papyrus',cursive;font-size:34px;text-align:center;z-index:90;pointer-events:none;text-shadow:1px 1px 4px rgba(0,0,0,0.9);transition:opacity 1.5s ease-in-out;opacity:1;width:80%}
+        #whisper-text{position:fixed;bottom:30px;left:50%;transform:translateX(-50%);color:#fff;font-family: Georgia, 'Times New Roman', serif;font-size:28px;text-align:center;z-index:900;pointer-events:none;text-shadow:0 1px 3px rgba(0,0,0,0.8);transition:opacity 2s ease-in-out;opacity:1;max-width:80%;background:rgba(0,0,0,0.6);padding:12px 18px;border-radius:12px;border:1px solid rgba(255,255,255,0.06);backdrop-filter:blur(4px);box-shadow:0 6px 18px rgba(0,0,0,0.6)}
         .nav-btn {
             position: fixed;
             bottom: 30px;
@@ -21,7 +21,7 @@
             background-color: rgba(20, 20, 20, 0.7);
             color: rgba(255, 180, 120, 0.8);
             text-decoration: none;
-            font-family: 'Papyrus', cursive;
+            font-family: Georgia, 'Times New Roman', serif;
             font-weight: bold;
             font-size: 28px;
             border: 2px solid rgba(0, 0, 0, 0.8);
@@ -73,12 +73,12 @@
 
     <script>
         const whispers = [
-            "One sheep plus two sheep is arithmetic... what number does it equal?",
-            "Observe the stone; the equation will guide you."
+            "This is the final chamber. If you're stuck, revisit earlier puzzles for clues.",
+            "You've completed the monument — take a moment to explore the final image."
         ];
         let wIndex = 0;
         const wEl = document.createElement('div');
-        wEl.className = 'hint-text';
+        wEl.id = 'whisper-text';
         wEl.innerText = whispers[wIndex];
         document.body.appendChild(wEl);
 
@@ -88,8 +88,8 @@
                 wIndex = (wIndex + 1) % whispers.length;
                 wEl.innerText = whispers[wIndex];
                 wEl.style.opacity = 1;
-            }, 1500);
-        }, 6000);
+            }, 2000);
+        }, 9000);
 
         // Developer bypass
         let devBypass = "";

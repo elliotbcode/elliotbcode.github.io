@@ -230,7 +230,7 @@
             background-color: rgba(20, 20, 20, 0.7);
             color: rgba(255, 180, 120, 0.8);
             text-decoration: none;
-            font-family: 'Papyrus', cursive;
+            font-family: Georgia, 'Times New Roman', serif;
             font-weight: bold;
             font-size: 28px;
             border: 2px solid rgba(0, 0, 0, 0.8);
@@ -267,16 +267,22 @@
             bottom: 30px;
             left: 50%;
             transform: translateX(-50%);
-            color: rgba(255, 255, 255, 0.8);
-            font-family: 'Papyrus', cursive;
-            font-size: 34px;
+            color: #fff;
+            font-family: Georgia, 'Times New Roman', serif;
+            font-size: 28px;
             text-align: center;
-            z-index: 90;
+            z-index: 900;
             pointer-events: none;
-            text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.9), -1px -1px 2px rgba(0, 0, 0, 0.8);
-            transition: opacity 1.5s ease-in-out;
+            text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8);
+            transition: opacity 2s ease-in-out;
             opacity: 1;
-            width: 80%;
+            max-width: 80%;
+            background: rgba(0,0,0,0.6);
+            padding: 12px 18px;
+            border-radius: 12px;
+            border: 1px solid rgba(255,255,255,0.06);
+            backdrop-filter: blur(4px);
+            box-shadow: 0 6px 18px rgba(0,0,0,0.6);
         }
     </style>
 </head>
@@ -458,8 +464,22 @@ CHOOSE AN OPTION:
                 }, 500);
             }
             setTimeout(() => {
-                window.location.href = 'page4.html';
+                navigateWithFade('page4.html', 900);
             }, 2200);
+        }
+
+        // Fade navigation helper (used to smooth transitions)
+        function navigateWithFade(url, fadeMs = 800) {
+            const overlay = document.createElement('div');
+            overlay.style.position = 'fixed';
+            overlay.style.inset = '0';
+            overlay.style.background = '#000';
+            overlay.style.opacity = '0';
+            overlay.style.transition = `opacity ${fadeMs}ms ease`;
+            overlay.style.zIndex = '99999';
+            document.body.appendChild(overlay);
+            requestAnimationFrame(() => overlay.style.opacity = '1');
+            setTimeout(() => { window.location.href = url; }, fadeMs + 50);
         }
 
         function scrollHistory() {
@@ -478,8 +498,8 @@ CHOOSE AN OPTION:
 
     <script>
         const whispers = [
-            "Follow the menu: enable Write Mode first, then run the Repair Tool.",
-            "Use Options 2, 4, and 3 in sequence to repair the system."
+            "Enable Write Mode: enter '4' at the prompt, then run Repair Tool with '3'.",
+            "If you're unsure, enter '2' to read the system manual for guidance."
         ];
         let wIndex = 0;
         const wEl = document.createElement('div');
@@ -487,14 +507,24 @@ CHOOSE AN OPTION:
         wEl.innerText = whispers[0];
         document.body.appendChild(wEl);
 
+        // Slower rotation and gentler fade
         setInterval(() => {
             wEl.style.opacity = 0;
             setTimeout(() => {
                 wIndex = (wIndex + 1) % whispers.length;
                 wEl.innerText = whispers[wIndex];
                 wEl.style.opacity = 1;
-            }, 1500);
-        }, 6000);
+            }, 2000);
+        }, 9000);
+
+        // Attach fade-to-black to Next button clicks
+        document.querySelectorAll('a.nav-btn').forEach(btn => {
+            btn.addEventListener('click', function (e) {
+                if (!btn.classList.contains('active')) return;
+                e.preventDefault();
+                navigateWithFade(btn.href, 900);
+            });
+        });
     </script>
 </body>
 
