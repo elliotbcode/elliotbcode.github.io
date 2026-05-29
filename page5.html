@@ -36,7 +36,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            background-image: url("images/new computer.jpeg");
+            background-image: url("images/newcomputer.jpeg");
             background-size: cover;
             background-position: center center;
             background-repeat: no-repeat;
@@ -48,7 +48,7 @@
             width: 1920px;
             height: 1080px;
             flex-shrink: 0;
-            background-image: url("images/new computer.jpeg");
+            background-image: url("images/newcomputer.jpeg");
             background-size: 1950px auto;
             background-position: -75px 0;
             background-repeat: no-repeat;
@@ -828,14 +828,6 @@
                 // create a top-level overlay so the final image isn't clipped or zoomed by the scene transform
                 const existing = document.querySelector('.final-overlay');
                 if (existing) existing.remove();
-                const overlay = document.createElement('div');
-                overlay.className = 'final-overlay';
-                // Calculate scale to fit 1920x1080 into viewport
-                const scale = Math.max(window.innerWidth / 1920, window.innerHeight / 1080);
-                overlay.style.transform = `translate(-50%, -50%) scale(${scale})`;
-                overlay.innerHTML = `<div class="final-screen"><img src="images/EVEN BETTR.avif" alt="Final image"></div>`;
-                overlay.addEventListener('click', () => { overlay.remove(); });
-                document.body.appendChild(overlay);
                 const watchTitle = document.getElementById("watch-title");
                 const watchInfo = document.getElementById("watch-info");
                 if (watchTitle) watchTitle.textContent = "Broadcast Unlocked";
@@ -898,8 +890,8 @@
         initSequence();  // initialize randomized required order and lights
 
         const whispers = [
-            "Click the highlighted (pulsing) video. Follow the order it shows.",
-            "Click each highlighted ★ video in sequence until all are done to unlock Next."
+            "Click the highlighted video. Follow the order it shows.",
+            "Click each highlighted video in sequence until all are done to unlock Next."
         ];
         let wIndex = 0;
         const wEl = document.createElement('div');
