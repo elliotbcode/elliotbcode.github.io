@@ -9,10 +9,29 @@
     <style>
         html,body{height:100%;margin:0;background:#000;color:#fff;-webkit-text-size-adjust:100%;text-size-adjust:100%}
         .final-screen{position:fixed;left:0;top:0;width:100%;height:100%;background:#000;z-index:10;display:flex;align-items:center;justify-content:center;flex-direction:column}
-        .final-screen img{width:1920px;height:1080px;object-fit:none;display:block}
-        /* Keep the final image fixed at native size and centered; do not scale with viewport */
-        .final-overlay{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);width:1920px;height:1080px;background:#000;z-index:9999;overflow:auto;display:flex;align-items:center;justify-content:center}
-        .final-overlay img{width:1920px;height:1080px;object-fit:none;display:block}
+                .final-screen img{width:1920px;height:1080px;object-fit:none;display:block}
+                /* Keep the final image at native 1920x1080, center it and let the viewport clip overflow on smaller screens */
+                .final-overlay{
+                    position:fixed;
+                    left:0;
+                    top:0;
+                    width:100vw;
+                    height:100vh;
+                    background:#000;
+                    z-index:9999;
+                    overflow:hidden;
+                    display:block;
+                }
+                .final-overlay img{
+                    position:absolute;
+                    left:50%;
+                    top:50%;
+                    transform:translate(-50%,-50%);
+                    width:1920px;
+                    height:1080px;
+                    object-fit:none;
+                    display:block;
+                }
         .final-message{color:#fff;font-family: Georgia, 'Times New Roman', serif;font-size:32px;text-align:center;margin-top:20px;}
         .container{position:relative;z-index:1}
         #whisper-text{position:fixed;bottom:30px;left:50%;transform:translateX(-50%);color:#fff;font-family: Georgia, 'Times New Roman', serif;font-size:28px;text-align:center;z-index:900;pointer-events:none;text-shadow:0 1px 3px rgba(0,0,0,0.8);transition:opacity 2s ease-in-out;opacity:1;max-width:80%;background:rgba(0,0,0,0.6);padding:12px 18px;border-radius:12px;border:1px solid rgba(255,255,255,0.06);backdrop-filter:blur(4px);box-shadow:0 6px 18px rgba(0,0,0,0.6)}
