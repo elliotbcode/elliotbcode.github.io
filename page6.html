@@ -7,79 +7,58 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tablet VI</title>
     <style>
-        html,body{height:100%;margin:0;background:#000;color:#fff;-webkit-text-size-adjust:100%;text-size-adjust:100%}
-        .final-screen{position:fixed;left:0;top:0;width:100%;height:100%;background:#000;z-index:10;display:flex;align-items:center;justify-content:center;flex-direction:column}
-                .final-screen img{width:1920px;height:1080px;object-fit:none;display:block}
-                /* Keep the final image at native 1920x1080, center it and let the viewport clip overflow on smaller screens */
-                .final-overlay{
-                    position:fixed;
-                    left:0;
-                    top:0;
-                    width:100vw;
-                    height:100vh;
-                    background:#000;
-                    z-index:9999;
-                    overflow:hidden;
-                    display:block;
-                }
-                .final-overlay img{
-                    position:absolute;
-                    left:50%;
-                    top:50%;
-                    /* move a bit further left so the crop is centered in common viewports */
-                    transform:translate(calc(-50% - 2.5vw), -50%) scale(0.985);
-                    width:1920px;
-                    height:1080px;
-                    object-fit:none;
-                    display:block;
-                }
-                /* Static overlay that matches the image's native placement/size and doesn't resize */
-                .final-splash{
-                    position:absolute;
-                    left:50%;
-                    top:50%;
-                    transform:translate(calc(-50% - 2.5vw), -50%) scale(0.985);
-                    width:1920px;
-                    height:1080px;
-                    z-index:10001;
-                    pointer-events:none;
-                    display:flex;
-                    align-items:center;
-                    justify-content:center;
-                }
-                .final-splash .splash-text{
-                    position:relative;
-                    z-index:10002;
-                    color:#fff;
-                    font-family: Georgia, 'Times New Roman', serif;
-                    font-size:36px;
-                    text-align:center;
-                    line-height:1.25;
-                    /* reduce width ~8 characters per side to avoid overflowing the computer screen */
-                    width: calc(1400px - 16ch);
-                    max-width:1400px;
-                    pointer-events:none;
-                    text-shadow:0 6px 20px rgba(0,0,0,0.85);
-                }
-                .final-splash .splash-line{
-                    opacity:0;
-                    transform:translateY(18px);
-                    /* slightly slower fade in */
-                    transition:opacity 900ms ease, transform 900ms ease;
-                    display:block;
-                }
-                .final-splash .splash-line.show{
-                    opacity:1;
-                    transform:translateY(0);
-                }
-                .final-splash .splash-line.up{
-                    transform:translateY(-28px);
-                    transition:transform 300ms ease;
-                }
-                .final-splash .splash-credit{display:block;margin-top:10px;font-size:18px;color:#ffd7b2}
-        .final-message{color:#fff;font-family: Georgia, 'Times New Roman', serif;font-size:32px;text-align:center;margin-top:20px;}
-        .container{position:relative;z-index:1}
-        #whisper-text{position:fixed;bottom:30px;left:50%;transform:translateX(-50%);color:#fff;font-family: Georgia, 'Times New Roman', serif;font-size:28px;text-align:center;z-index:900;pointer-events:none;text-shadow:0 1px 3px rgba(0,0,0,0.8);transition:opacity 2s ease-in-out;opacity:1;max-width:80%;background:rgba(0,0,0,0.6);padding:12px 18px;border-radius:12px;border:1px solid rgba(255,255,255,0.06);backdrop-filter:blur(4px);box-shadow:0 6px 18px rgba(0,0,0,0.6)}
+        html,
+        body {
+            height: 100vh;
+            margin: 0;
+            background-color: #222;
+            background-image: url('images/EVENBETTR.avif');
+            background-repeat: no-repeat;
+            background-position: center;
+            background-position-x: 55%;
+            background-position-y: center;
+            color: #fff;
+            font-family: Georgia, 'Times New Roman', serif;
+            font-size: 3vw;
+            background-size: 220%;
+        }
+
+        /* Static overlay that matches the image's native placement/size and doesn't resize */
+        #finalsplash {
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            width: 75vw;
+            margin: auto;
+        }
+
+        .splash-line {
+            opacity: 0;
+            transform: translateY(18px);
+            transition: opacity 900ms ease, transform 900ms ease;
+            display: block;
+        }
+
+        .splash-line.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .splash-line.up {
+            transform: translateY(-28px);
+            transition: transform 300ms ease;
+        }
+
+        .splash-credit {
+            display: block;
+            margin-top: 10px;
+            font-size: 18px;
+            color: #ffd7b2
+        }
+
+
         .nav-btn {
             position: fixed;
             bottom: 30px;
@@ -101,15 +80,29 @@
             text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.9);
             display: none;
         }
+
         .nav-btn.active {
             display: block;
             animation: pulseGlow 1.5s infinite;
         }
+
         @keyframes pulseGlow {
-            0% { box-shadow: 0 0 10px rgba(255, 180, 120, 0.6), 4px 4px 10px rgba(0,0,0,0.8); border-color: rgba(255, 180, 120, 0.6); }
-            50% { box-shadow: 0 0 30px rgba(255, 200, 150, 1), 4px 4px 15px rgba(0,0,0,0.9); border-color: rgba(255, 200, 150, 1); }
-            100% { box-shadow: 0 0 10px rgba(255, 180, 120, 0.6), 4px 4px 10px rgba(0,0,0,0.8); border-color: rgba(255, 180, 120, 0.6); }
+            0% {
+                box-shadow: 0 0 10px rgba(255, 180, 120, 0.6), 4px 4px 10px rgba(0, 0, 0, 0.8);
+                border-color: rgba(255, 180, 120, 0.6);
+            }
+
+            50% {
+                box-shadow: 0 0 30px rgba(255, 200, 150, 1), 4px 4px 15px rgba(0, 0, 0, 0.9);
+                border-color: rgba(255, 200, 150, 1);
+            }
+
+            100% {
+                box-shadow: 0 0 10px rgba(255, 180, 120, 0.6), 4px 4px 10px rgba(0, 0, 0, 0.8);
+                border-color: rgba(255, 180, 120, 0.6);
+            }
         }
+
         .nav-btn:hover {
             background-color: rgba(40, 30, 20, 0.9);
             color: rgba(255, 220, 180, 1);
@@ -121,73 +114,29 @@
 </head>
 
 <body>
-    <div class="final-overlay" id="final-overlay">
-        <img id="final-image" src="images/EVEN BETTR.avif" alt="Final image">
-        <div class="final-message">Thanks for playing!<br/>You've completed the monument.</div>
-
-        <div class="final-splash" id="final-splash" aria-hidden="true">
-            <div class="splash-text" aria-hidden="false">
-                <div class="splash-line">Welcome to the modern age — where technology is readily available and easy to use.</div>
-                <div class="splash-line">Who knows what amazing innovations will come next.</div>
-                <div class="splash-line">Thanks for playing.</div>
-                <div class="splash-line splash-credit">Made by Elliot Broweleit</div>
-            </div>
+    <div class="splash-text" id="finalsplash">
+        <div>
+            <div class="splash-line">Welcome to the modern age — where technology is readily available and easy to
+                use.</div>
+            <div class="splash-line">Who knows what amazing innovations will come next.</div>
+            <div class="splash-line">Thanks for playing.</div>
+            <div class="splash-line splash-credit">Made by Elliot Broweleit</div>
         </div>
     </div>
 
-    <svg style="width:0;height:0;position:absolute;" aria-hidden="true">
-        <filter id="weathered">
-            <feTurbulence type="fractalNoise" baseFrequency="0.06" numOctaves="4" result="noise" />
-            <feDisplacementMap in="SourceGraphic" in2="noise" scale="8" xChannelSelector="R" yChannelSelector="G" />
-        </filter>
-    </svg>
-    <div class="weathered-text">⟡ ⟠ ⟡</div>
-    <div class="container">
-        <h1>Tablet VI</h1>
-        <p>This is page6.html.</p>
-    </div>
-
     <script>
-        const whispers = [
-            "This is the final chamber. If you're stuck, revisit earlier puzzles for clues.",
-            "You've completed the monument — take a moment to explore the final image."
-        ];
-        let wIndex = 0;
-        const wEl = document.createElement('div');
-        wEl.id = 'whisper-text';
-        wEl.innerText = whispers[wIndex];
-        document.body.appendChild(wEl);
-
-        setInterval(() => {
-            wEl.style.opacity = 0;
-            setTimeout(() => {
-                wIndex = (wIndex + 1) % whispers.length;
-                wEl.innerText = whispers[wIndex];
-                wEl.style.opacity = 1;
-            }, 2000);
-        }, 9000);
-
-        // Developer bypass
-        let devBypass = "";
-        window.addEventListener('keydown', (e) => {
-            devBypass += e.key;
-            if (devBypass.endsWith('OPENSEASAME')) {
-                document.querySelector('.nav-btn').classList.add('active');
-            }
-        });
-
         // Sequential splash lines: fade in each line, and lift previous lines to make room
-        (function(){
-            const splash = document.getElementById('final-splash');
-            if(!splash) return;
+        (function () {
+            const splash = document.getElementById('finalsplash');
+            if (!splash) return;
             const lines = Array.from(splash.querySelectorAll('.splash-line'));
-            const baseDelay = 900;
-            const gap = 2000;
-            lines.forEach((el,i) => {
+            const baseDelay = 700;
+            const gap = 1600;
+            lines.forEach((el, i) => {
                 setTimeout(() => {
                     el.classList.add('show');
-                    if(i > 0){
-                        for(let j=0;j<i;j++) lines[j].classList.add('up');
+                    if (i > 0) {
+                        for (let j = 0; j < i; j++) lines[j].classList.add('up');
                     }
                 }, baseDelay + i * gap);
             });
