@@ -252,16 +252,22 @@
             bottom: 30px;
             left: 50%;
             transform: translateX(-50%);
-            color: rgba(255, 255, 255, 0.9);
+            color: #fff;
             font-family: Georgia, 'Times New Roman', serif;
             font-size: 34px;
             text-align: center;
-            z-index: 90;
+            z-index: 900;
             pointer-events: none;
-            text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.9), -1px -1px 2px rgba(0, 0, 0, 0.8);
-            transition: opacity 1.5s ease-in-out;
+            text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8);
+            transition: opacity 2s ease-in-out;
             opacity: 1;
-            width: 80%;
+            max-width: 80%;
+            background: rgba(0,0,0,0.6);
+            padding: 12px 18px;
+            border-radius: 12px;
+            border: 1px solid rgba(255,255,255,0.06);
+            backdrop-filter: blur(4px);
+            box-shadow: 0 6px 18px rgba(0,0,0,0.6);
         }
     </style>
 </head>
@@ -400,7 +406,7 @@
 
     <script>
         const whispers = [
-            "Type the exact phrase shown on the paper using your keyboard. No clicking.",
+            "Type the exact phrase shown on the paper using your keyboard.",
             "Any wrong key resets progress — type carefully until the sentence matches exactly."
         ];
         let wIndex = 0;
